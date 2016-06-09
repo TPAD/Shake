@@ -1,0 +1,15 @@
+PODS:
+  - Cosmos (1.2.3)
+  - GoogleMaps (1.13.2)
+
+DEPENDENCIES:
+  - Cosmos
+  - GoogleMaps
+
+SPEC CHECKSUMS:
+  Cosmos: efddd01b729956ad6335bc58bc92e5735a1d12a3
+  GoogleMaps: b20a103ff307f58392e603cf142e59d7e30374c1
+
+PODFILE CHECKSUM: a14412e45229feb9132c9135171e733e3c27f920
+
+COCOAPODS: 1.0.0
