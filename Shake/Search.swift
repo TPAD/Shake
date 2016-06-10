@@ -9,8 +9,9 @@
 import Foundation
 import CoreLocation
 import GoogleMaps
+import Alamofire
 
-// MARK: - Google API URIs
+// MARK: - Google API URI stuff
 let URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
 let LOCATION = "location="
 let RADIUS = "radius="
@@ -18,32 +19,12 @@ var KEY = "key="
 let RANK = "rankby="
 
 let CUSTOMURL = "https://www.googleapis.com/customsearch/v1?"
-let Q = "q="
-let NUM = "&num="   //NUMBER OF RESULTS 1-10
-let START = "&start=" // offset from search results 1-100
-let IMGSIZE = "&imgsize=medium"
-let TYPE = "&searchType=image"
-let FILE = "&filetype=jpg"
-let CX = "&cx="
-
-let STURL = "https://maps.googleapis.com/maps/api/streetview?"
-let SIZE = "size="
 
 // MARK: - SEARCH
 public class Search {
     
     private static let appDelegate: AppDelegate? =
         UIApplication.sharedApplication().delegate as? AppDelegate
-    
-    static func getImageSearchURL(query: String, name: String) -> String {
-        let engine: String = "016392490542402719401:wtwc4bgjdok"
-        let resultNum: Int = 5
-        let offset: Int = 1
-        let result: String =
-            "\(CUSTOMURL)\(Q)\(query)%20\(name)\(NUM)\(resultNum)\(START)\(offset)\(IMGSIZE)\(TYPE)" +
-            "\(FILE)\(CX)\(engine)"
-        return result
-    }
     
     static func getLocationsURL(query: String, location: CLLocation?) -> String? {
         let coordinate: CLLocationCoordinate2D?
@@ -64,59 +45,31 @@ public class Search {
         return nil
     }
     
-    static func getStreetViewsURL(coords: CLLocationCoordinate2D?, size: CGSize)
-        -> String? {
-            if let coords = coords {
-                let lat: CLLocationDegrees = coords.latitude
-                let lng: CLLocationDegrees = coords.longitude
-                let width: Int = Int(size.width)
-                let height: Int = Int(size.height)
-                if let apiKey = appDelegate?.getApiKey() {
-                    let result =
-                        "\(STURL)\(SIZE)\(width)x\(height)" +
-                            "&\(LOCATION)\(lat),\(lng)&\(KEY)\(apiKey)"
-                    return result
-                }
-            }
-            return nil
-    }
-    
-    static func parseImageDataJSON(theJSON: Array<NSDictionary>?) {
-        print(theJSON)
-        if let results = theJSON {
-            print(results)
-        }
-    }
-    
-    static func taskHandler(data: NSData?, response: NSURLResponse?, error: NSError?) {
-        do {
-            if let data = data {
-                let theJSON =
-                    try NSJSONSerialization
-                        .JSONObjectWithData(data, options: .MutableContainers)
-                        as! NSMutableDictionary
-                print(theJSON)
-                let results = theJSON["results"] as? Array<NSDictionary>
-                parseImageDataJSON(results)
-            }
-        } catch {
-            print("Image Results Error: \(error)")
-        }
-    }
-    
-    static func googleImageSearch(url: String) {
-        let session =
-            NSURLSession(configuration: NSURLSessionConfiguration
-                .defaultSessionConfiguration())
+    static func fetchImages(query: String, completion: (NSDictionary?) -> Void) {
+        let params: [String : String] =
+            ["q": "\(query)",
+             "cx": "016392490542402719401:qnjrofkd7nk",
+             "start": "1", "imgSize": "medium", "imgType": "photo", "num": "2",
+             "safe": "off", "searchType": "image",
+             "key":"AIzaSyCBckYCeXQ6j_voOmOq7UHuWqWjHUYEz7E"]
         
-        let url: NSURL? = NSURL(string: url)
-        
-        if let URL = url {
-            let networkTask =
-                session.dataTaskWithURL(URL, completionHandler: taskHandler)
-            networkTask.resume()
+        Alamofire.request(.GET, CUSTOMURL, parameters: params, encoding: .URL)
+            .responseJSON{ (response) -> Void in
+                dispatch_async(dispatch_get_main_queue(), {
+                    guard response.result.isSuccess else {
+                        print("Error Fetching Results: \(response.result.error)")
+                        completion(nil)
+                        return
+                    }
+                    guard let value = response.result.value
+                        as? NSDictionary else {
+                            print("Bad Data")
+                            completion(nil)
+                            return
+                    }
+                    completion(value)
+                })
         }
-
     }
 }
 
@@ -133,7 +86,7 @@ extension ViewController {
             //self.imageMetaData = array
             self.results = results
             self.locationNames = array
-            //print(array)
+            //print(results)
         }
         
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
@@ -176,12 +129,6 @@ extension ViewController {
     }
 }
 
-
-// MARK: - DESTINATIONS VIEW CONTROLLER EXTENSION
-extension DestinationViewController {
-    
-
-}
 
 
 

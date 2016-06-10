@@ -10,23 +10,26 @@ import Foundation
 import UIKit
 import GoogleMaps
 import Cosmos
+import Alamofire
+import AlamofireImage
 
 class DestinationViewController: UIViewController {
     
     @IBOutlet weak var locationImage: UIImageView!
+    @IBOutlet weak var mainImage: UIImageView!
+    
     @IBOutlet weak var locationNameView: UIView!
     @IBOutlet weak var ratingView: UIView!
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var rating: CosmosView!
-  
-
-    
-    //var locationLabel: UILabel = UILabel(frame: CGRectMake(0, 0 ,0 ,0))
     @IBOutlet weak var locationLabel: UILabel!
+    
     @IBOutlet weak var leftIcon: UIImageView!
     @IBOutlet weak var centerIcon: UIImageView!
     @IBOutlet weak var rightIcon: UIImageView!
+    
     @IBOutlet weak var middleIconMid: NSLayoutConstraint!
+    
     var centerIconMidX: CGFloat?
     
     var locationNames: [String?]?
@@ -149,37 +152,23 @@ class DestinationViewController: UIViewController {
     
     func imageSetup() {
         let borderColor =
-            UIColor(red: 110/255.0, green: 110/255.0, blue: 110/255.0, alpha: 0.5)
+            UIColor(red: 110/255.0, green: 110/255.0, blue: 110/255.0, alpha: 0.75)
         locationImage.layer.cornerRadius = locationImage.frame.width/2
         locationImage.layer.borderColor = borderColor.CGColor
         locationImage.layer.borderWidth = 5
         locationImage.clipsToBounds = true
-        locationNameView.alpha = 0.75
         locationNameView.addSubview(locationLabel)
         locationImage.addSubview(locationNameView)
+        locationImage.insertSubview(mainImage, atIndex: 0)
         
         locationImage.addSubview(ratingView)
-        ratingView.alpha = 0.6
         ratingView.backgroundColor = (locationIsOpenNow()) ?
-            UIColor.greenColor():UIColor.redColor()
-        
-        /*if let places = results {
-         let id = places[numberOfShakesDetected]["place_id"] as? String
-         if let placeID = id {
-         dispatch_async(dispatch_get_main_queue(), {
-         GMSPlacesClient.sharedClient().lookUpPhotosForPlaceID(placeID) {
-         (photos, error) -> Void in
-         if let error = error {
-         // TODO: handle the error.
-         print("Error: \(error.description)")
-         } else {
-         if let photo = photos?.results.first {
-         self.loadImageForMetadata(photo)
-         }
-         }}
-         })
-         }
-         }*/
+            //medium seaweed
+            UIColor(red:60/255.0, green:179/255.0, blue:113/255.0, alpha: 0.8):
+            //medium firebrick
+            UIColor(red:205/255.0, green:35/255.0, blue:35/255.0, alpha:0.8)
+        locationNameView.backgroundColor =
+        UIColor(red:197/255.0, green:193/255.0, blue:170/255.0, alpha: 0.75)
     }
     
     func acquireRatingForLocation() {
@@ -199,14 +188,8 @@ class DestinationViewController: UIViewController {
             if let hours = places[numberOfShakesDetected]["opening_hours"]
                 as? NSMutableDictionary {
                 if let currentlyOpen = hours["open_now"] as? Int {
-                    switch(currentlyOpen) {
-                    case 0:
-                        return false
-                    case 1:
-                        return true
-                    default:
-                        return false
-                    }
+                    
+                    return (currentlyOpen == 0) ? false:true
                 }
             }
         }
@@ -231,25 +214,6 @@ class DestinationViewController: UIViewController {
         }
     }
     
-    func imageForLocation() {
-        if let places = results {
-            if let geometry = places[numberOfShakesDetected]["geometry"] {
-                if let location = geometry["location"] as? NSMutableDictionary {
-                    let lat: Double = location["lat"] as! Double
-                    let lng: Double = location["lng"] as! Double
-                    let size: CGSize = self.locationImage.frame.size
-                    let placeLocation =
-                        CLLocationCoordinate2D(latitude: lat, longitude: lng)
-                    if let url =
-                        Search.getStreetViewsURL(placeLocation, size: size) {
-                          
-                    }
-                }
-            }
-        }
-        
-    }
-    
     func LabelSetup() {
         if let places = results {
             locationLabel.text = places[numberOfShakesDetected]["name"] as? String
@@ -259,23 +223,26 @@ class DestinationViewController: UIViewController {
     
     
     //MARK: - Animations
-    func exitView() {
-        UIView.animateWithDuration(0.6, delay: 0.0, options: .CurveEaseOut, animations: {
+    func exitLocationView() {
+        self.imageQuery("gas station",
+                        atIndex: self.numberOfShakesDetected)
+        UIView.animateWithDuration(0.45, delay: 0.0, options: .CurveEaseOut, animations: {
             self.locationImage.center.x -= self.locationImage.frame.width
             }, completion: {
                 (completed) -> Void in
                 if completed {
+                    self.mainImage.image = nil
                     self.imageSetup()
                     self.LabelSetup()
                     self.acquireRatingForLocation()
-                    self.enterView()
+                    self.enterLocationView()
                     self.setIcons()
                 }
         })
     }
     
-    func enterView() {
-        UIView.animateWithDuration(0.6, delay: 0.0, options: .CurveEaseIn, animations: {
+    func enterLocationView() {
+        UIView.animateWithDuration(0.45, delay: 0.05, options: .CurveEaseIn, animations: {
             self.locationImage.center.x += self.locationImage.frame.width
             self.distanceFromLocation()
             self.view.layoutIfNeeded()
@@ -297,23 +264,12 @@ class DestinationViewController: UIViewController {
                             numberOfShakesDetected = 0
                         }
                     }
-                exitView()
+                exitLocationView()
                 }
             }
         }
         
     }
-    
-    /*override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
-        super.motionBegan(motion, withEvent: event)
-        if (self.isViewLoaded() == true && self.view.window != nil) {
-            if let motion = event {
-                if motion.subtype == .MotionShake {
-                    
-                }
-            }
-        }
-    }*/
     
     //MARK: - Views
     override func viewWillAppear(animated: Bool) {
@@ -328,18 +284,55 @@ class DestinationViewController: UIViewController {
         LabelSetup()
         distanceFromLocation()
         acquireRatingForLocation()
-        imageForLocation()
-        //print(locationNames)
+        imageQuery("gas station", atIndex: numberOfShakesDetected)
     }
     
-    /*override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        dispatch_async(dispatch_get_main_queue(), {
-            self.locationLabel.center.x = self.locationNameView.center.x
+    //MARK: - Image Query
+
+    func imageQuery(location: String, atIndex: Int) {
+        if let names = locationNames {
+            let name: String = (names.count > atIndex) ?
+                "\(names[atIndex]!)":"\(location)"
+            let query: String?
+            query = (name.contains(location)) ?
+                "\(name)": "\(name) "+"\(location)"
+            if let search = query {
+                retrieveImage(search)
+            }
+        }
+    }
+    
+    func retrieveImage(query: String) {
+        Search.fetchImages(query, completion: {
+            (data) -> Void in
+            if let data = data {
+                let result: [NSDictionary]? = data["items"] as? [NSDictionary]
+                if let result = result {
+                    let desired: NSDictionary =
+                        (result.count > 0) ? result[0] as NSDictionary:[:]
+                    let url: String? = (desired.count > 0) ?
+                        desired["link"] as? String: ""
+                    if let URL = url {
+                        self.setImage(URL)
+                    }
+                }
+            }
+        })
+    }
+    
+    func setImage(url: String) {
+        Alamofire.request(.GET, url).responseImage(completionHandler: {
+            response in
+            // TODO: Handle errors
+            if let image = response.result.value {
+                self.mainImage.image = image
+                self.mainImage.clipsToBounds = true
+            }
         })
         
-    }*/
+    }
 }
+
 
 
 

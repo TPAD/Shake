@@ -5,8 +5,12 @@ use_frameworks!
 
 pod "GoogleMaps"
 pod "Cosmos"
+pod "Alamofire"
+pod "AlamofireImage"
 
 target 'Shake' do
   pod 'GoogleMaps'
   pod 'Cosmos'
+  pod 'Alamofire'
+  pod 'AlamofireImage'
 end

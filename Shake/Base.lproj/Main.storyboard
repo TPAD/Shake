@@ -37,30 +37,40 @@
                                 <color key="textColor" red="0.96078431369999995" green="0.94117647059999998" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="V8J-Mq-lSM">
+                                <rect key="frame" x="113" y="448" width="150" height="150"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="V8J-Mq-lSM" secondAttribute="height" id="MaP-Iv-xny"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.76078431372549016" green="0.27450980392156865" blue="0.26666666666666666" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.80392156862745101" green="0.14901960784313725" blue="0.14901960784313725" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="V8J-Mq-lSM" secondAttribute="bottom" constant="69" id="2Ng-AH-iLK"/>
                             <constraint firstItem="SnR-zU-YN1" firstAttribute="width" secondItem="rIY-e1-kr6" secondAttribute="width" id="4eg-L0-kWc"/>
                             <constraint firstItem="SnR-zU-YN1" firstAttribute="height" secondItem="rIY-e1-kr6" secondAttribute="height" id="6DK-LB-BQd"/>
                             <constraint firstItem="8vK-np-5Gg" firstAttribute="top" secondItem="SnR-zU-YN1" secondAttribute="bottom" constant="23" id="AyH-0R-xDm"/>
                             <constraint firstItem="SnR-zU-YN1" firstAttribute="top" secondItem="rIY-e1-kr6" secondAttribute="bottom" id="F5a-Ad-DrN"/>
                             <constraint firstItem="rIY-e1-kr6" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="J8H-uI-3qh"/>
+                            <constraint firstItem="V8J-Mq-lSM" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Wv0-pL-Per"/>
                             <constraint firstItem="8vK-np-5Gg" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="bYc-3T-XDj"/>
                             <constraint firstItem="8vK-np-5Gg" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.3" id="cdI-26-k7Z"/>
                             <constraint firstItem="SnR-zU-YN1" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="fPe-xq-rAO"/>
                             <constraint firstItem="rIY-e1-kr6" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.6" id="mBa-IY-imG"/>
+                            <constraint firstItem="V8J-Mq-lSM" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.4" id="mig-1S-Mjw"/>
                             <constraint firstItem="rIY-e1-kr6" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="100" id="t0V-k2-1i7"/>
                         </constraints>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>
                         <outlet property="locationName" destination="SnR-zU-YN1" id="pTk-m7-MvT"/>
+                        <outlet property="place" destination="V8J-Mq-lSM" id="AS4-mN-IAi"/>
                         <segue destination="iif-ih-lHL" kind="presentation" identifier="toDetail" modalTransitionStyle="crossDissolve" id="eI6-ZF-LS4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="439.5" y="388.5"/>
+            <point key="canvasLocation" x="447.5" y="388.5"/>
         </scene>
         <!--Destination View Controller-->
         <scene sceneID="00Q-b2-ilI">
@@ -76,7 +86,7 @@
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Zek-jr-WS2">
                                 <rect key="frame" x="18" y="100" width="338" height="338"/>
-                                <color key="backgroundColor" red="0.93958262790000002" green="0.96078431369999995" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="Zek-jr-WS2" secondAttribute="height" id="LN7-x2-tQ2"/>
                                 </constraints>
@@ -153,20 +163,28 @@
                                     <constraint firstItem="yEz-jh-D5R" firstAttribute="height" secondItem="Uqb-Pv-6bS" secondAttribute="height" multiplier="0.2" id="tcW-a9-0kQ"/>
                                 </constraints>
                             </view>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="88P-5e-dU4">
+                                <rect key="frame" x="19" y="131" width="338" height="225"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.26666666666666666" green="0.27450980392156865" blue="0.76078431372549016" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.0" green="0.52549019607843139" blue="0.54509803921568623" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="Qfz-Or-Y32" firstAttribute="top" secondItem="Zek-jr-WS2" secondAttribute="bottom" constant="80" id="09g-eA-sjW"/>
                             <constraint firstItem="Zek-jr-WS2" firstAttribute="centerX" secondItem="Z3h-VN-rbC" secondAttribute="centerX" id="2F4-3r-yoc"/>
                             <constraint firstItem="Uqb-Pv-6bS" firstAttribute="bottom" secondItem="Zek-jr-WS2" secondAttribute="bottom" id="73G-Yt-vXR"/>
                             <constraint firstItem="mhL-Eo-S6E" firstAttribute="top" secondItem="Zek-jr-WS2" secondAttribute="top" id="8Tb-yh-cC9"/>
+                            <constraint firstItem="88P-5e-dU4" firstAttribute="width" secondItem="Zek-jr-WS2" secondAttribute="width" id="9if-bS-Vx5"/>
                             <constraint firstItem="mhL-Eo-S6E" firstAttribute="leading" secondItem="Zek-jr-WS2" secondAttribute="leading" id="GrG-Wq-olK"/>
                             <constraint firstItem="Uqb-Pv-6bS" firstAttribute="height" secondItem="Zek-jr-WS2" secondAttribute="height" multiplier="0.3" id="Jp2-yU-FBk"/>
+                            <constraint firstItem="88P-5e-dU4" firstAttribute="top" secondItem="mhL-Eo-S6E" secondAttribute="bottom" constant="-10" id="KeR-hr-Puv"/>
                             <constraint firstItem="Uqb-Pv-6bS" firstAttribute="centerX" secondItem="Zek-jr-WS2" secondAttribute="centerX" id="Nxx-2p-4rU"/>
                             <constraint firstItem="Uqb-Pv-6bS" firstAttribute="leading" secondItem="Zek-jr-WS2" secondAttribute="leading" id="Q4f-fT-vk6"/>
                             <constraint firstItem="mhL-Eo-S6E" firstAttribute="height" secondItem="Zek-jr-WS2" secondAttribute="height" multiplier="0.12" id="Qat-kC-57i"/>
+                            <constraint firstItem="Uqb-Pv-6bS" firstAttribute="top" secondItem="88P-5e-dU4" secondAttribute="bottom" constant="-20" id="TxO-E3-VgW"/>
                             <constraint firstItem="Zek-jr-WS2" firstAttribute="width" secondItem="Z3h-VN-rbC" secondAttribute="width" multiplier="0.9" id="UEa-CD-LA9"/>
                             <constraint firstItem="Zek-jr-WS2" firstAttribute="top" secondItem="cPZ-Zm-meI" secondAttribute="bottom" constant="80" id="dat-a2-igY"/>
+                            <constraint firstItem="88P-5e-dU4" firstAttribute="centerX" secondItem="Z3h-VN-rbC" secondAttribute="centerX" id="fsN-2l-Hgu"/>
                             <constraint firstItem="mhL-Eo-S6E" firstAttribute="trailing" secondItem="Zek-jr-WS2" secondAttribute="trailing" id="m64-ji-QgT"/>
                             <constraint firstItem="Uqb-Pv-6bS" firstAttribute="trailing" secondItem="Zek-jr-WS2" secondAttribute="trailing" id="urM-Tw-9tq"/>
                             <constraint firstItem="Qfz-Or-Y32" firstAttribute="centerX" secondItem="Z3h-VN-rbC" secondAttribute="centerX" id="zbu-bo-lCx"/>
@@ -180,6 +198,7 @@
                         <outlet property="locationImage" destination="Zek-jr-WS2" id="Fcj-kp-gb3"/>
                         <outlet property="locationLabel" destination="cpw-l3-gwN" id="WHW-Tx-ekO"/>
                         <outlet property="locationNameView" destination="Uqb-Pv-6bS" id="ELT-Ro-UV6"/>
+                        <outlet property="mainImage" destination="88P-5e-dU4" id="bbo-IZ-nyi"/>
                         <outlet property="middleIconMid" destination="GoC-xL-e3D" id="8TF-ph-Xct"/>
                         <outlet property="rating" destination="c6z-1R-DVd" id="stv-ae-tWb"/>
                         <outlet property="ratingView" destination="mhL-Eo-S6E" id="GM4-83-sVB"/>

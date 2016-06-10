@@ -12,6 +12,7 @@ import CoreLocation
 class ViewController: UIViewController {
     
     @IBOutlet weak var locationName: UILabel!
+    @IBOutlet weak var place: UIImageView!
     
     var locationManager: CLLocationManager!
     var results: Array<NSDictionary>?
@@ -20,6 +21,8 @@ class ViewController: UIViewController {
     var readyToSegue: Bool = false
     var viewIsReadyToDisplay: Bool = false
     let status = CLLocationManager.authorizationStatus()
+    
+    var placesClient: GMSPlacesClient?
     
     // MARK: - Override Functions
 
@@ -43,6 +46,7 @@ class ViewController: UIViewController {
             self.view.offlineViewAppear()
             print("Not connected")
         }
+        placesClient = GMSPlacesClient()
         initialLoadView()
     }
 
@@ -58,19 +62,10 @@ class ViewController: UIViewController {
                 }
             }
         }
-        let url: String = Search.getImageSearchURL("Marathon", name: "gas%20station")
-        //print(url)
-        //Search.googleImageSearch(url)
-        
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
     }
     
     override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
         super.motionBegan(motion, withEvent: event)
-        print("asldkasjf")
         if (self.isViewLoaded() == true && self.view.window != nil) {
             if let motion = event {
                 if motion.subtype == .MotionShake && readyToSegue {
@@ -86,26 +81,18 @@ class ViewController: UIViewController {
         }
     }
     
-    override func motionCancelled(motion: UIEventSubtype, withEvent event: UIEvent?) {
-        super.motionCancelled(motion, withEvent: event)
-        if let motion = event {
-            if motion.subtype == .MotionShake {
-                print("motion interrupted")
-            }
-        }
-    }
-    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if let destination = segue.destinationViewController as? DestinationViewController {
             if let location = locationManager.location {
                 destination.userCoords = location.coordinate
                 destination.address = self.address
                 destination.results = self.results
-                //destination.photoData = self.imageMetaData!
                 destination.locationNames = self.locationNames
             }
         }
     }
+    
+    //MARK: - 
     
     func locationGetterSetup() {
         if status != .Restricted && status != .Denied {
@@ -177,7 +164,6 @@ class ViewController: UIViewController {
     
     func applicationWillEnterBackground(notification: NSNotification) {
         print("did enter background")
-        
     }
     
     deinit {
@@ -232,21 +218,29 @@ extension ViewController {
     func initialLoadAnimation(view: UIView, image: UIImageView) {
         image.rotationAnimation()
         
-        let delayInSeconds: Int64  = 750000000;
+        let delayInSeconds: Int64  = 800000000;
         
         let popTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds);
         
         dispatch_after(popTime, dispatch_get_main_queue(), {
-            UIView.animateWithDuration(1, delay: 0, options: .CurveEaseInOut, animations: {
-                image.center.y -= 0.5*(view.frame.height)
-                view.alpha = 0
+            UIView.animateWithDuration(0.81, delay: 0, options: .CurveEaseInOut, animations: {
+                image.center.y -= (view.frame.height)
                 }, completion: {
                     _ -> Void in
-                    view.removeFromSuperview()
+                    self.fadeOut(view)
             })
         });
     }
     
+    func fadeOut(view: UIView) {
+        UIView.animateWithDuration(0.5, delay: 0, options: .CurveEaseInOut, animations: {
+            view.alpha = 0
+            }, completion: {
+                _ -> Void in
+                view.removeFromSuperview()
+        })
+        
+    }
 }
 
 

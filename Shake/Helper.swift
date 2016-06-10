@@ -9,32 +9,6 @@
 import Foundation
 import UIKit
 
-public extension UIViewController {
-    
-    // returns a view's first responder within in its hierarchy
-    func currentFirstResponder() -> UIResponder? {
-        if self.isFirstResponder() {
-            return self
-        } else if self.view.isFirstResponder() {
-            return self.view
-        }
-        for subview in self.view.subviews {
-            if subview.isFirstResponder() {
-                return subview
-            }
-        }
-        // view does not have first responder
-        return nil
-    }
-    
-    // removes first responder if it exists
-    func removeFirstResponder() {
-        if (currentFirstResponder() != nil) {
-            currentFirstResponder()?.resignFirstResponder()
-        }
-    }
-}
-
 public extension UIView {
 
     func horizontalShakeAnimation() {
@@ -56,8 +30,8 @@ public extension UIView {
         animation.fromValue = CGFloat(M_PI*(-0.05))
         animation.toValue = CGFloat(M_PI*(0.05))
         animation.autoreverses = true
-        animation.repeatCount = 4
-        animation.duration = 0.075
+        animation.repeatCount = 7
+        animation.duration = 0.08
         
         self.layer.addAnimation(animation, forKey: nil)
     }
@@ -103,11 +77,25 @@ public extension UIView {
     }
 }
 
-extension CLLocation {
+public extension CLLocation {
     
     func distanceInMilesFromLocation(location: CLLocation) -> Double {
         let distanceMeters = self.distanceFromLocation(location)
         return distanceMeters*0.00062137
+    }
+}
+
+public extension String {
+    
+    func contains(string: String) -> Bool {
+        let this: String = self.lowercaseString
+        let that: String = string.lowercaseString
+        
+        if let _ = this.rangeOfString(that, options: .BackwardsSearch) {
+            return true
+        }
+        
+        return false
     }
 }
 
@@ -128,8 +116,6 @@ class Helper: NSObject {
                 })
             }
         }
-        //var cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
-        //alertController.addAction(cancelAction)
         alertController.addAction(settingsAction)
         
         host.presentViewController(alertController, animated: true, completion: nil);
@@ -142,16 +128,6 @@ class Helper: NSObject {
             UIAlertController(title: title, message: "", preferredStyle: .Alert)
         
         host.presentViewController(alertController, animated: true, completion: nil);
-        
-    }
-    
-    // returns image JSON wrapped in NSArray
-    static func imageSearchEngine(name: String) -> NSArray {
-        
-        
-        
-        
-        return NSArray()
     }
     
 }
