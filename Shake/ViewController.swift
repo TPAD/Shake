@@ -12,7 +12,6 @@ import CoreLocation
 class ViewController: UIViewController {
     
     @IBOutlet weak var locationName: UILabel!
-    @IBOutlet weak var place: UIImageView!
     
     var locationManager: CLLocationManager!
     var results: Array<NSDictionary>?
@@ -20,9 +19,8 @@ class ViewController: UIViewController {
     var address: String?
     var readyToSegue: Bool = false
     var viewIsReadyToDisplay: Bool = false
-    let status = CLLocationManager.authorizationStatus()
-    
-    var placesClient: GMSPlacesClient?
+    var status = CLLocationManager.authorizationStatus()
+    var userCoord: CLLocationCoordinate2D?
     
     // MARK: - Override Functions
 
@@ -46,22 +44,12 @@ class ViewController: UIViewController {
             self.view.offlineViewAppear()
             print("Not connected")
         }
-        placesClient = GMSPlacesClient()
         initialLoadView()
     }
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         locationGetterSetup()
-        let query: String = "gas_station"
-        
-        if status == .AuthorizedWhenInUse && Reachability.isConnected() {
-            if let manager = locationManager {
-                if let url = Search.getLocationsURL(query, location: manager.location) {
-                    googleSearch(url)
-                }
-            }
-        }
     }
     
     override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
@@ -83,10 +71,10 @@ class ViewController: UIViewController {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if let destination = segue.destinationViewController as? DestinationViewController {
-            if let location = locationManager.location {
-                destination.userCoords = location.coordinate
+            if let data = results {
+                destination.userCoords = self.userCoord
                 destination.address = self.address
-                destination.results = self.results
+                destination.results = data
                 destination.locationNames = self.locationNames
             }
         }
@@ -104,6 +92,7 @@ class ViewController: UIViewController {
                 locationManager.delegate = self
                 locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
                 locationManager.startUpdatingLocation()
+                
             }
         } else if status == .AuthorizedAlways {
             print("App should not have this control")
@@ -166,6 +155,12 @@ class ViewController: UIViewController {
         print("did enter background")
     }
     
+    @IBAction func testSegue(sender: AnyObject) {
+        self.performSegueWithIdentifier("toDetail", sender: self)
+    }
+    
+    
+    
     deinit {
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
@@ -185,8 +180,19 @@ extension ViewController: CLLocationManagerDelegate {
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
+        
             let value: CLLocationCoordinate2D = (location.coordinate)
+            self.userCoord = location.coordinate
             reverseGeocodeCoordinate(value)
+            let query: String = "gas_station"
+            
+            if status == .AuthorizedWhenInUse && Reachability.isConnected() {
+                if let location = manager.location {
+                    if let url = Search.getLocationsURL(query, location: location) {
+                        googleSearch(url)
+                    }
+                }
+            }
         }
         self.locationManager.stopUpdatingLocation()
     }
@@ -223,7 +229,7 @@ extension ViewController {
         let popTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds);
         
         dispatch_after(popTime, dispatch_get_main_queue(), {
-            UIView.animateWithDuration(0.81, delay: 0, options: .CurveEaseInOut, animations: {
+            UIView.animateWithDuration(0.80, delay: 0.05, options: .CurveEaseInOut, animations: {
                 image.center.y -= (view.frame.height)
                 }, completion: {
                     _ -> Void in

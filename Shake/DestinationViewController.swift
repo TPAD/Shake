@@ -15,22 +15,14 @@ import AlamofireImage
 
 class DestinationViewController: UIViewController {
     
-    @IBOutlet weak var locationImage: UIImageView!
-    @IBOutlet weak var mainImage: UIImageView!
-    
-    @IBOutlet weak var locationNameView: UIView!
-    @IBOutlet weak var ratingView: UIView!
     @IBOutlet weak var distanceLabel: UILabel!
-    @IBOutlet weak var rating: CosmosView!
-    @IBOutlet weak var locationLabel: UILabel!
     
-    @IBOutlet weak var leftIcon: UIImageView!
-    @IBOutlet weak var centerIcon: UIImageView!
-    @IBOutlet weak var rightIcon: UIImageView!
+    let blue: UIColor =
+        UIColor(red: 78/255.0, green:147/255.0, blue:222/255.0, alpha: 1.0)
+    let green: UIColor =
+        UIColor(red:70/255.0, green:179/255.0, blue:173/255.0, alpha: 1.0)
     
-    @IBOutlet weak var middleIconMid: NSLayoutConstraint!
-    
-    var centerIconMidX: CGFloat?
+    var locationView: LocationView?
     
     var locationNames: [String?]?
     var address: String?
@@ -46,155 +38,23 @@ class DestinationViewController: UIViewController {
     var results: Array<NSDictionary>?
     var iconCount: Int = 0
     var numberOfShakesDetected: Int = 0
+    var locationToSearch: String = "gas station"
+    var locationPhoneNumber: String?
     
-    // MARK: - Icons
-    
-    func locationHasCarRepair() -> Bool {
-        if let places = results {
-            if let types = places[numberOfShakesDetected]["types"] as? Array<String>{
-                if types.contains("car_repair") { return true }
-                else { return false }
-            }
-        }
-        return false
-    }
-    
-    func locationHasATM() -> Bool {
-        if let places = results {
-            if let types = places[numberOfShakesDetected]["types"] as? Array<String>{
-                if types.contains("atm") { return true }
-                else { return false }
-            }
-        }
-        return false
-    }
-    
-    func locationIsConvenienceStore() -> Bool {
-        if let places = results {
-            if let types = places[numberOfShakesDetected]["types"] as? Array<String>{
-                if types.contains("convenience_store") { return true }
-                else { return false }
-            }
-        }
-        return false
-    }
-    
-    func locationIcons(setIcons: (repair: Bool, ATM: Bool, store: Bool) -> Void) {
-        let carRepair: Bool = locationHasCarRepair()
-        let atm: Bool = locationHasATM()
-        let isStore: Bool = locationIsConvenienceStore()
-        if carRepair && atm && isStore {
-            self.iconCount = 3
-        } else if carRepair && atm || atm && isStore || carRepair && isStore {
-            self.iconCount = 2
-        } else if carRepair || atm || isStore {
-            self.iconCount = 1
-        } else {
-            self.iconCount = 0
-        }
-        setIcons(repair: carRepair, ATM: atm, store: isStore)
-    }
-    
-    func setIcons() {
-        locationIcons({
-            (repair, ATM, store) -> Void in
-            if self.iconCount == 3 {
-                self.centerIcon.alpha = 1
-                self.rightIcon.alpha = 1
-                self.leftIcon.alpha = 1
-                if let midX = self.centerIconMidX {
-                    self.middleIconMid.constant = midX
-                }
-                self.leftIcon.image = UIImage(named: "cafe-71")
-                self.centerIcon.image = UIImage(named: "atm-71")
-                self.rightIcon.image = UIImage(named: "shopping-71")
+    func instantiateCustomView() {
+        let y: CGFloat = (0.15)*self.view.frame.height
+        let x: CGFloat = (0.05)*self.view.frame.width
+        let width: CGFloat = (0.9)*self.view.frame.width
         
-            } else if self.iconCount == 2 {
-                self.leftIcon.alpha = 0
-                self.centerIcon.alpha = 1
-                self.rightIcon.alpha = 1
-                if let midX = self.centerIconMidX {
-                    self.middleIconMid.constant = midX
-                }
-                self.middleIconMid.constant -= (self.centerIcon.frame.width/2 + 2.5)
-                if repair && ATM {
-                    self.centerIcon.image = UIImage(named: "car_repair-71")
-                    self.rightIcon.image = UIImage(named: "atm-71")
-                } else if repair && store {
-                    self.centerIcon.image = UIImage(named: "car_repair-71")
-                    self.rightIcon.image = UIImage(named: "shopping-71")
-                } else {
-                    self.centerIcon.image = UIImage(named: "shopping-71")
-                    self.rightIcon.image = UIImage(named: "atm-71")
-                }
-            } else if self.iconCount == 1 {
-                self.leftIcon.alpha = 0
-                self.rightIcon.alpha = 0
-                self.centerIcon.alpha = 1
-                if let midX = self.centerIconMidX {
-                    self.middleIconMid.constant = midX
-                }
-                if repair && !ATM && !store {
-                    self.centerIcon.image = UIImage(named: "car_repair-71")}
-                else if ATM && !repair && !store {
-                    self.centerIcon.image = UIImage(named: "atm-71")}
-                else if store && !ATM && !repair {
-                    self.centerIcon.image = UIImage(named: "shopping-71")}
-            } else {
-                self.leftIcon.alpha = 0
-                self.rightIcon.alpha = 0
-                self.centerIcon.alpha = 0
-            }
-        })
+        let frame: CGRect = CGRectMake(x, y, width, width)
+        locationView = LocationView(frame: frame)
+        locationView!.dataSource = self
+        locationView!.delegate = self
+        locationView!.loadData()
+        self.view.addSubview(locationView!)
     }
     
     // MARK: - Setup
-    
-    func imageSetup() {
-        let borderColor =
-            UIColor(red: 110/255.0, green: 110/255.0, blue: 110/255.0, alpha: 0.75)
-        locationImage.layer.cornerRadius = locationImage.frame.width/2
-        locationImage.layer.borderColor = borderColor.CGColor
-        locationImage.layer.borderWidth = 5
-        locationImage.clipsToBounds = true
-        locationNameView.addSubview(locationLabel)
-        locationImage.addSubview(locationNameView)
-        locationImage.insertSubview(mainImage, atIndex: 0)
-        
-        locationImage.addSubview(ratingView)
-        ratingView.backgroundColor = (locationIsOpenNow()) ?
-            //medium seaweed
-            UIColor(red:60/255.0, green:179/255.0, blue:113/255.0, alpha: 0.8):
-            //medium firebrick
-            UIColor(red:205/255.0, green:35/255.0, blue:35/255.0, alpha:0.8)
-        locationNameView.backgroundColor =
-        UIColor(red:197/255.0, green:193/255.0, blue:170/255.0, alpha: 0.75)
-    }
-    
-    func acquireRatingForLocation() {
-        self.rating.settings.fillMode = .Precise
-        if let places = self.results {
-            if let rating = places[numberOfShakesDetected]["rating"] {
-                self.rating.rating = rating as! Double
-            } else {
-                self.rating.rating = 2.5
-            }
-        }
-    }
-    
-    func locationIsOpenNow() -> Bool {
-        
-        if let places = results {
-            if let hours = places[numberOfShakesDetected]["opening_hours"]
-                as? NSMutableDictionary {
-                if let currentlyOpen = hours["open_now"] as? Int {
-                    
-                    return (currentlyOpen == 0) ? false:true
-                }
-            }
-        }
-        return false
-    }
     
     func distanceFromLocation() {
         if let places = results {
@@ -214,46 +74,70 @@ class DestinationViewController: UIViewController {
         }
     }
     
-    func LabelSetup() {
-        if let places = results {
-            locationLabel.text = places[numberOfShakesDetected]["name"] as? String
-            locationLabel.adjustsFontSizeToFitWidth = true
-        }
-    }
-    
     
     //MARK: - Animations
     func exitLocationView() {
-        self.imageQuery("gas station",
-                        atIndex: self.numberOfShakesDetected)
         UIView.animateWithDuration(0.45, delay: 0.0, options: .CurveEaseOut, animations: {
-            self.locationImage.center.x -= self.locationImage.frame.width
+            self.locationView!.center.x -= self.locationView!.frame.width
             }, completion: {
                 (completed) -> Void in
                 if completed {
-                    self.mainImage.image = nil
-                    self.imageSetup()
-                    self.LabelSetup()
-                    self.acquireRatingForLocation()
+                    self.locationView?.loadData()
                     self.enterLocationView()
-                    self.setIcons()
                 }
         })
     }
     
     func enterLocationView() {
         UIView.animateWithDuration(0.45, delay: 0.05, options: .CurveEaseIn, animations: {
-            self.locationImage.center.x += self.locationImage.frame.width
+            self.locationView!.center.x += self.locationView!.frame.width
             self.distanceFromLocation()
-            self.view.layoutIfNeeded()
             }, completion: nil)
     }
     
-    // MARK: - OVERRIDDEN FUNCTIONS
+    func makePhoneCall() {
+        
+    }
     
-    // MARK: - Shake detection
+   func returnPhoneNumber(from data: NSDictionary? ) {
+        if let data = data {
+            let results: NSDictionary? = data["result"] as? NSDictionary
+            if let result = results {
+                self.locationPhoneNumber =
+                    result["formatted_phone_number"] as? String
+            }
+        }
+    }
+    
+    func callAction() {
+        if let num = locationPhoneNumber?.numberFormattedForCall() {
+            if let url = NSURL(string: "tel://\(num)") {
+                UIApplication.sharedApplication().openURL(url)
+            }
+        } else {
+            // TODO: alert of sorts
+            print("Action can't be completed RN")
+        }
+    }
+    
+    func callAlert() {
+        if let names = locationNames {
+            let name = names[numberOfShakesDetected]! as String
+            let title: String = "Call \(name)?"
+            let alertController = UIAlertController(title: title, message: "", preferredStyle: .ActionSheet)
+            let yes = UIAlertAction(title: "Ok", style: .Default, handler: {
+                (action) -> Void in
+                self.callAction()
+            })
+            let nah = UIAlertAction(title: "No", style: .Cancel, handler: nil)
+            alertController.addAction(yes)
+            alertController.addAction(nah)
+            presentViewController(alertController, animated: true, completion: nil)
+        }
+    }
+    
+    // MARK: - OVERRIDDEN FUNCTIONS
     override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
-        //super.motionBegan(motion, withEvent: event)
         if (self.isViewLoaded() == true && self.view.window != nil) {
             if let motion = event {
                 if motion.subtype == .MotionShake {
@@ -271,68 +155,132 @@ class DestinationViewController: UIViewController {
         
     }
     
-    //MARK: - Views
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.centerIconMidX = middleIconMid.constant
-        setIcons()
-        imageSetup()
-        LabelSetup()
+        instantiateCustomView()
         distanceFromLocation()
-        acquireRatingForLocation()
-        imageQuery("gas station", atIndex: numberOfShakesDetected)
+        let place_id: String =
+            results![numberOfShakesDetected]["place_id"] as! String
+        Search.detailQuery(byPlaceID: place_id, returnData: returnPhoneNumber)
     }
-    
-    //MARK: - Image Query
+}
 
-    func imageQuery(location: String, atIndex: Int) {
-        if let names = locationNames {
-            let name: String = (names.count > atIndex) ?
-                "\(names[atIndex]!)":"\(location)"
-            let query: String?
-            query = (name.contains(location)) ?
-                "\(name)": "\(name) "+"\(location)"
-            if let search = query {
-                retrieveImage(search)
+//MARK: - LocationViewDataSource
+extension DestinationViewController: LocationViewDataSource {
+    
+    func loadDataFor(view: LocationView) {
+        if let data = results {
+            if data.count > 0 {
+                view.data = data[numberOfShakesDetected]
             }
         }
     }
     
-    func retrieveImage(query: String) {
-        Search.fetchImages(query, completion: {
-            (data) -> Void in
-            if let data = data {
-                let result: [NSDictionary]? = data["items"] as? [NSDictionary]
-                if let result = result {
-                    let desired: NSDictionary =
-                        (result.count > 0) ? result[0] as NSDictionary:[:]
-                    let url: String? = (desired.count > 0) ?
-                        desired["link"] as? String: ""
-                    if let URL = url {
-                        self.setImage(URL)
-                    }
-                }
-            }
-        })
-    }
-    
-    func setImage(url: String) {
-        Alamofire.request(.GET, url).responseImage(completionHandler: {
-            response in
-            // TODO: Handle errors
-            if let image = response.result.value {
-                self.mainImage.image = image
-                self.mainImage.clipsToBounds = true
-            }
-        })
-        
+    func requestImage(view: LocationView) {
+        if let names = locationNames {
+            Search.imageQuery(locationToSearch, atIndex: numberOfShakesDetected,
+                              list: names, imageView: view.locationImageView)
+        }
     }
 }
 
+//MARK: - LocationViewDelegate
+extension DestinationViewController: LocationViewDelegate {
+    
+    func initializeLongPress(view: LocationView, sender: UIGestureRecognizer) {
+        if sender.state == .Began {
+            //view.addSubview(dView!)
+            view.toggleState()
+            if view.state == .Pressed {
+                view.addPreviewToSubview()
+                view.layer.borderWidth = 0
+            } else {
+                view.layer.borderWidth = 5
+            }
+        }
+    }
+    
+    func handleSwipeLeft(view: LocationView, sender: UISwipeGestureRecognizer) {
+        if view.state == .Pressed {
+            let preview: UIView = view.viewWithTag(9)! //not nil if pressed
+            let center_x: CGFloat = view.bounds.size.width/2
+            let x_offset: CGFloat = view.bounds.size.width/6
+            let y_offset: CGFloat = view.bounds.size.height/8
+            let max_offset: CGPoint =
+                CGPointMake(center_x-x_offset, view.bounds.size.height/2-y_offset)
+            if preview.center != max_offset {
+                UIView.animateWithDuration(0.25, delay: 0, options: .CurveLinear,
+                                           animations: {
+                                            preview.center.x -= x_offset
+                                            preview.center.y -= y_offset
+                    }, completion: {
+                        completed in
+                        if completed && preview.center.x != center_x {
+                            UIView.animateWithDuration(0.5, animations: {
+                                view.dualView!.lhs!.backgroundColor = self.blue
+                                view.dualView!.lhs_icon!.image = UIImage(named: "Marker")
+                                }, completion: {
+                                    _ in
+                                    print("navigate")
+                            })
+                            UIView.animateWithDuration(0.5, animations: {
+                                
+                            })
+                        } else if completed && preview.center.x == center_x {
+                            UIView.animateWithDuration(0.5, animations: {
+                                view.dualView!.rhs!.backgroundColor = DualView.BGColor
+                                view.dualView!.rhs_icon!.image =
+                                    UIImage(named: "PhoneFilled-100")
+                            })
+                        }
+                })
+            }
+        }
+    }
+    
+    func handleSwipeRight(view: LocationView, sender: UISwipeGestureRecognizer) {
+        if view.state == .Pressed {
+            let preview: UIView = view.viewWithTag(9)! //not nil if pressed
+            let center_x: CGFloat = view.bounds.size.width/2
+            let x_offset: CGFloat = view.bounds.size.width/6
+            let y_offset: CGFloat = view.bounds.size.height/8
+            let maxOffset: CGPoint =
+                CGPointMake(center_x+x_offset, view.bounds.size.height/2+y_offset)
+            if preview.center != maxOffset {
+                UIView.animateWithDuration(0.25, delay: 0, options: .CurveLinear,
+                                           animations: {
+                                            preview.center.x += x_offset
+                                            preview.center.y += y_offset
+                    }, completion: {
+                        completed in
+                        if completed && preview.center.x != center_x {
+                            UIView.animateWithDuration(0.5, animations: {
+                                view.dualView!.rhs!.backgroundColor = self.green
+                                view.dualView!.rhs_icon!.image = UIImage(named: "Phone")
+                                }, completion: {
+                                    _ in
+                                    self.callAlert()
+                            })
+                        } else if completed && preview.center.x == center_x {
+                            UIView.animateWithDuration(0.5, animations: {
+                                view.dualView!.lhs!.backgroundColor = DualView.BGColor
+                                view.dualView!.lhs_icon!.image =
+                                    UIImage(named: "MarkerFilled-100")
+                            })
+                        }
+                })
+                
+            }
+        }
+    }
+
+    
+}
 
 
 

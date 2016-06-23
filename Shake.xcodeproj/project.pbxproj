@@ -12,6 +12,7 @@
 		E72B55321CFD749B000CD07E /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72B55311CFD749B000CD07E /* Reachability.swift */; };
 		E75034941CFBA18A003F5625 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75034931CFBA18A003F5625 /* Helper.swift */; };
 		E75034961CFBAFC3003F5625 /* DestinationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75034951CFBAFC3003F5625 /* DestinationViewController.swift */; };
+		E7A843191D0CE6AA0061C535 /* LocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A843181D0CE6AA0061C535 /* LocationView.swift */; };
 		E7F7CEA31CFB8EAA00BA7F1D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7CEA21CFB8EAA00BA7F1D /* AppDelegate.swift */; };
 		E7F7CEA51CFB8EAA00BA7F1D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7CEA41CFB8EAA00BA7F1D /* ViewController.swift */; };
 		E7F7CEA81CFB8EAA00BA7F1D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7F7CEA61CFB8EAA00BA7F1D /* Main.storyboard */; };
@@ -27,6 +28,7 @@
 		E72B55311CFD749B000CD07E /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		E75034931CFBA18A003F5625 /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		E75034951CFBAFC3003F5625 /* DestinationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DestinationViewController.swift; sourceTree = "<group>"; };
+		E7A843181D0CE6AA0061C535 /* LocationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationView.swift; sourceTree = "<group>"; };
 		E7F7CE9F1CFB8EAA00BA7F1D /* Shake.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shake.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7F7CEA21CFB8EAA00BA7F1D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7F7CEA41CFB8EAA00BA7F1D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 				E722B32D1CFC316700AD2A13 /* Search.swift */,
 				E75034931CFBA18A003F5625 /* Helper.swift */,
 				E72B55311CFD749B000CD07E /* Reachability.swift */,
+				E7A843181D0CE6AA0061C535 /* LocationView.swift */,
 				E7F7CEA61CFB8EAA00BA7F1D /* Main.storyboard */,
 				E7F7CEAC1CFB8EAA00BA7F1D /* Assets.xcassets */,
 				E7F7CEAE1CFB8EAA00BA7F1D /* LaunchScreen.storyboard */,
@@ -227,6 +230,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E72B55321CFD749B000CD07E /* Reachability.swift in Sources */,
+				E7A843191D0CE6AA0061C535 /* LocationView.swift in Sources */,
 				E7F7CEAB1CFB8EAA00BA7F1D /* Shake.xcdatamodeld in Sources */,
 				E7F7CEA51CFB8EAA00BA7F1D /* ViewController.swift in Sources */,
 				E7F7CEA31CFB8EAA00BA7F1D /* AppDelegate.swift in Sources */,

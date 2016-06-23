@@ -31,7 +31,7 @@ public extension UIView {
         animation.toValue = CGFloat(M_PI*(0.05))
         animation.autoreverses = true
         animation.repeatCount = 7
-        animation.duration = 0.08
+        animation.duration = 0.075
         
         self.layer.addAnimation(animation, forKey: nil)
     }
@@ -44,6 +44,16 @@ public extension UIView {
         self.layer.mask = layer
         self.clipsToBounds = true
         self.layoutIfNeeded()
+    }
+    
+    func roundView() {
+        let white: UIColor =
+            UIColor(red:255/255.0, green:255/255.0, blue:255/255.0, alpha:0.7)
+        self.layer.cornerRadius = self.frame.height/2
+        self.layer.borderWidth = 3
+        self.layer.masksToBounds = false
+        self.layer.borderColor = white.CGColor
+        self.clipsToBounds = true
     }
     
     func offlineViewAppear() {
@@ -96,6 +106,16 @@ public extension String {
         }
         
         return false
+    }
+    
+    func numberFormattedForCall() -> String {
+        let charactersToReplace: [String] = ["(", ")", " ", "-"]
+        var filteredNum: String = self
+        for character in charactersToReplace {
+            filteredNum = filteredNum.stringByReplacingOccurrencesOfString(
+                character, withString: "")
+        }
+        return filteredNum
     }
 }
 
