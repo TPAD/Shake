@@ -108,6 +108,7 @@ class LocationView: UIView {
                 //medium firebrick
                 UIColor(red:205/255.0, green:35/255.0, blue:35/255.0, alpha:0.8)
             locationName.adjustsFontSizeToFitWidth = true
+            locationName.bounds.size.height = locationName.requiredHeight()
         }
     }
     
@@ -146,7 +147,7 @@ class LocationView: UIView {
         let height: CGFloat = (0.58)*self.frame.height
         let frame: CGRect = CGRectMake(0, y, width, height)
         locationImageView.frame = frame
-        locationImageView.backgroundColor = UIColor.blackColor()
+        locationImageView.image = UIImage(named: "station")
         self.addSubview(locationImageView)
     }
     

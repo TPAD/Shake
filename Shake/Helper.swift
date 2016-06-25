@@ -119,6 +119,22 @@ public extension String {
     }
 }
 
+public extension UILabel {
+    
+    func requiredHeight() -> CGFloat {
+        let frame: CGRect = CGRectMake(0, 0, self.frame.width,  CGFloat.max)
+        let new: UILabel = UILabel(frame: frame)
+        new.numberOfLines = 0
+        new.lineBreakMode = .ByWordWrapping
+        new.font = self.font
+        new.text = self.text
+        new.sizeToFit()
+        
+        return new.frame.height
+    }
+    
+}
+
 class Helper: NSObject {
     
     static func navigateToSettingsViaAlert(host: UIViewController) {

@@ -45,11 +45,26 @@ class ViewController: UIViewController {
             print("Not connected")
         }
         initialLoadView()
+        locationGetterSetup()
     }
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        locationGetterSetup()
+        //TODO: there is a better solution to this memory leak problem
+        let delayInSecs: Int64 = 3000000000
+        
+        let popTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, delayInSecs)
+        
+        dispatch_after(popTime, dispatch_get_main_queue(), {
+            if let manager = self.locationManager {
+                let query: String = "gas_station"
+                if self.status == .AuthorizedWhenInUse && Reachability.isConnected() {
+                    if let location = manager.location {
+                        Search.GSearh(query, location: location, getData: self.parse)
+                    }
+                }
+            }
+        })
     }
     
     override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
@@ -72,7 +87,6 @@ class ViewController: UIViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if let destination = segue.destinationViewController as? DestinationViewController {
             if let data = results {
-                destination.userCoords = self.userCoord
                 destination.address = self.address
                 destination.results = data
                 destination.locationNames = self.locationNames
@@ -90,6 +104,7 @@ class ViewController: UIViewController {
             }
             if CLLocationManager.locationServicesEnabled() {
                 locationManager.delegate = self
+                locationManager.distanceFilter = 100.0
                 locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
                 locationManager.startUpdatingLocation()
                 
@@ -159,6 +174,20 @@ class ViewController: UIViewController {
         self.performSegueWithIdentifier("toDetail", sender: self)
     }
     
+    func parse(json: [NSDictionary]?) {
+        let array: [String?]
+        if let data = json {
+            array = data.map({($0["name"] as? String)})
+            self.results = data
+            self.locationNames = array
+        }
+        
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+        readyToSegue = true
+        print("done")
+        self.locationManager.stopUpdatingLocation()
+    }
+    
     
     
     deinit {
@@ -179,22 +208,17 @@ extension ViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.first {
-        
+        if let location = locations.last {
             let value: CLLocationCoordinate2D = (location.coordinate)
             self.userCoord = location.coordinate
             reverseGeocodeCoordinate(value)
-            let query: String = "gas_station"
-            
+            /*let query: String = "gas_station"
             if status == .AuthorizedWhenInUse && Reachability.isConnected() {
                 if let location = manager.location {
-                    if let url = Search.getLocationsURL(query, location: location) {
-                        googleSearch(url)
-                    }
+                    Search.GSearh(query, location: location, getData: parse)
                 }
-            }
+            }*/
         }
-        self.locationManager.stopUpdatingLocation()
     }
     
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
@@ -224,9 +248,9 @@ extension ViewController {
     func initialLoadAnimation(view: UIView, image: UIImageView) {
         image.rotationAnimation()
         
-        let delayInSeconds: Int64  = 800000000;
+        let delayInSeconds: Int64  = 800000000
         
-        let popTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds);
+        let popTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds)
         
         dispatch_after(popTime, dispatch_get_main_queue(), {
             UIView.animateWithDuration(0.80, delay: 0.05, options: .CurveEaseInOut, animations: {

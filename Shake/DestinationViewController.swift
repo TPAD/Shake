@@ -27,14 +27,7 @@ class DestinationViewController: UIViewController {
     var locationNames: [String?]?
     var address: String?
     var userLocation: CLLocation?
-    var userCoords: CLLocationCoordinate2D? {
-        didSet {
-            if userCoords != nil {
-                userLocation = CLLocation(latitude: userCoords!.latitude,
-                                          longitude: userCoords!.longitude)
-            }
-        }
-    }
+   
     var results: Array<NSDictionary>?
     var iconCount: Int = 0
     var numberOfShakesDetected: Int = 0
@@ -95,10 +88,6 @@ class DestinationViewController: UIViewController {
             }, completion: nil)
     }
     
-    func makePhoneCall() {
-        
-    }
-    
    func returnPhoneNumber(from data: NSDictionary? ) {
         if let data = data {
             let results: NSDictionary? = data["result"] as? NSDictionary
@@ -153,11 +142,6 @@ class DestinationViewController: UIViewController {
             }
         }
         
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-
     }
     
     override func viewDidLoad() {
@@ -227,9 +211,6 @@ extension DestinationViewController: LocationViewDelegate {
                                 }, completion: {
                                     _ in
                                     print("navigate")
-                            })
-                            UIView.animateWithDuration(0.5, animations: {
-                                
                             })
                         } else if completed && preview.center.x == center_x {
                             UIView.animateWithDuration(0.5, animations: {
