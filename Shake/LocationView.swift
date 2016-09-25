@@ -6,21 +6,20 @@
 //  Copyright © 2016 Tony Padilla. All rights reserved.
 //
 
-import UIKit
-import Cosmos
-
-//MARK: - DATASOURCE
+//MARK: - LVDATASOURCE
 protocol LocationViewDataSource: class {
-    func loadDataFor(view: LocationView)
-    func requestImage(view: LocationView)
+    func loadDataFor(_ view: LocationView)
+    func requestImage(_ view: LocationView)
 }
 
+//MARK: - LVDELEGATE
 protocol LocationViewDelegate: class {
-    func initializeLongPress(view: LocationView, sender: UIGestureRecognizer)
-    func handleSwipeRight(view: LocationView, sender: UISwipeGestureRecognizer)
-    func handleSwipeLeft(view: LocationView, sender: UISwipeGestureRecognizer)
+    func initializeLongPress(_ view: LocationView, sender: UIGestureRecognizer)
+    func handleSwipeRight(_ view: LocationView, sender: UISwipeGestureRecognizer)
+    func handleSwipeLeft(_ view: LocationView, sender: UISwipeGestureRecognizer)
 }
 
+//MARK: - LocationView
 class LocationView: UIView {
     weak var iconLeft: UIImageView?
     weak var iconRight: UIImageView?
@@ -35,10 +34,7 @@ class LocationView: UIView {
                 clearIcons()
                 drawIcons()
                 starView.backgroundColor = locationIsOpenNow() ?
-                //medium seaweed
-                UIColor(red:60/255.0, green:179/255.0, blue:113/255.0, alpha: 0.8):
-                //medium firebrick
-                UIColor(red:205/255.0, green:35/255.0, blue:35/255.0, alpha:0.8)
+                Helper.Colors.mediumSeaweed: Helper.Colors.mediumFirebrick
             }
         }
     }
@@ -50,7 +46,7 @@ class LocationView: UIView {
     var nameView: UIView = UIView()
     var starView: UIView = UIView()
     var locationName: UILabel = UILabel()
-    var rating: CosmosView = CosmosView()
+    var ratingView: RatingView?
     var numberOfIcons: Int = 0
     let white: UIColor =
         UIColor(red:255/255.0, green:255/255.0, blue:255/255.0, alpha:0.7)
@@ -60,45 +56,51 @@ class LocationView: UIView {
     var rightSwipe: UISwipeGestureRecognizer?
     
     enum State {
-        case Default
-        case Pressed
+        case `default`
+        case pressed
     }
     
-    var state: State = .Default {
+    var state: State = .default {
         didSet {
             if let v = self.viewWithTag(9) {
-                UIView.animateWithDuration(0.35, delay: 0, options: .CurveEaseOut,
+                UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseOut,
                 animations: { v.alpha = 0 }, completion: {
                     _ in
                     v.removeFromSuperview()
                 })
             }
             switch state {
-            case .Default:
+            case .default:
                 for subview in subviews {
-                    if subview.isKindOfClass(DualView) {
-                        UIView.animateWithDuration(0.35, delay: 0, options: .CurveEaseOut,
+                    if subview.isKind(of: DualView.self) {
+                        UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseOut,
                         animations: { subview.alpha = 0 }, completion: {
                             _ in
                             subview.removeFromSuperview()
                         })
                     }
                 }
-            case .Pressed:
+            case .pressed:
                 dualView = DualView(frame: self.bounds)
                 dualView!.alpha = 0
+                dualView!.delegate = self
                 addSubview(dualView!)
-                UIView.animateWithDuration(0.35, delay: 0, options: .CurveEaseIn,
+                UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseIn,
                 animations: { self.dualView!.alpha = 1 }, completion: { _ in })
             }
         }
     }
     
     func toggleState() {
-        state = (state == .Default) ? .Pressed:.Default
+        state = (state == .default) ? .pressed:.default
     }
     
-    private func setLocationName() {
+    func undoSwipe(onView view: DualView, sender: UISwipeGestureRecognizer) {
+        view.delegate?.undoSwipeAction(onView: view, sender: sender)
+        
+    }
+    
+    fileprivate func setLocationName() {
         if let name = data!["name"] as? String {
             locationName.text = name
             locationName.font = UIFont(name: "PingFangHK-Regular", size: 30)
@@ -112,86 +114,88 @@ class LocationView: UIView {
         }
     }
     
-    private func setRating() {
-        self.rating.settings.fillMode = .Precise
-        self.rating.userInteractionEnabled = false
+    fileprivate func setRating() {
         if let stars = data!["rating"] {
-            self.rating.rating = stars as! Double
+            ratingView!.rating = stars as! Float
+        } else {
+            ratingView!.rating = 0.0
         }
     }
     
-    private func nameLabelSetup() {
+    fileprivate func nameLabelSetup() {
         let width: CGFloat = 0.75*(nameView.frame.width)
         let height:CGFloat = 0.3*(nameView.frame.height)
-        let frame = CGRectMake(0, 0, width, height)
+        let frame = CGRect(x: 0, y: 0, width: width, height: height)
         locationName.frame = frame
         locationName.center.x = nameView.center.x
-        locationName.textAlignment = .Center
+        locationName.textAlignment = .center
         nameView.addSubview(locationName)
     }
     
-    private func nameViewSetup() {
+    fileprivate func nameViewSetup() {
         let y: CGFloat = 0.7*(self.frame.height)
         let width: CGFloat = self.frame.width
         let height: CGFloat = 0.3*(self.frame.height)
         let frame: CGRect =
-            CGRectMake(0, y, width, height)
+            CGRect(x: 0, y: y, width: width, height: height)
         nameView.frame = frame
         nameView.backgroundColor = white
         self.addSubview(nameView)
     }
     
-    private func mainImageViewSetup() {
+    fileprivate func mainImageViewSetup() {
         let y: CGFloat = (0.12)*self.frame.height
         let width: CGFloat = self.frame.width
         let height: CGFloat = (0.58)*self.frame.height
-        let frame: CGRect = CGRectMake(0, y, width, height)
+        let frame: CGRect = CGRect(x: 0, y: y, width: width, height: height)
         locationImageView.frame = frame
         locationImageView.image = UIImage(named: "station")
         self.addSubview(locationImageView)
     }
     
-    private func setupStarsView() {
+    fileprivate func setupStarsView() {
         let height: CGFloat = 0.12*(self.frame.height)
         let width: CGFloat = self.frame.width
-        let frame: CGRect = CGRectMake(0, 0, width, height)
+        let frame: CGRect = CGRect(x: 0, y: 0, width: width, height: height)
         starView.frame = frame
         starView.backgroundColor = white
         self.addSubview(starView)
     }
     
-    private func ratingViewSetup() {
-        let width: CGFloat = (0.45)*starView.frame.width
-        let height: CGFloat = (0.3)*starView.frame.height
-        let frame: CGRect = CGRectMake(0, 0, width, height)
-        rating.frame = frame
-        rating.center = starView.center
-        rating.settings.starSize = 24
-        starView.addSubview(rating)
+    fileprivate func ratingViewSetup() {
+        let width: CGFloat = (0.35)*starView.frame.width
+        let height: CGFloat = width/5
+        let frame: CGRect = CGRect(x: 0, y: 0, width: width, height: height)
+        ratingView = RatingView(frame: frame).then {
+            $0.center.x = self.starView.center.x
+            $0.center.y = self.starView.center.y + height/5
+            
+        }
+        starView.addSubview(ratingView!)
     }
     
-    private func locationHasCarRepair() -> Bool {
+    fileprivate func locationHasCarRepair() -> Bool {
         if let types = data!["types"] as? [String] {
             if types.contains("car_repair") { return true }
         }
         return false
     }
     
-    private func locationHasATM() -> Bool {
+    fileprivate func locationHasATM() -> Bool {
         if let types = data!["types"] as? [String] {
             if types.contains("atm") { return true }
         }
         return false
     }
     
-    private func locationIsConvenienceStore() -> Bool {
+    fileprivate func locationIsConvenienceStore() -> Bool {
         if let types = data!["types"] as? [String] {
             if types.contains("conveneince_store") { return true }
         }
         return false
     }
     
-    private func locationIsOpenNow() -> Bool {
+    fileprivate func locationIsOpenNow() -> Bool {
         if let hours = data!["opening_hours"] as? NSMutableDictionary {
             if let currentlyOpen = hours["open_now"] as? Int {
                 return (currentlyOpen == 0) ? false:true
@@ -200,7 +204,7 @@ class LocationView: UIView {
         return false
     }
     
-    private func setNumberOfIcons(locationHas:(repair: Bool, ATM: Bool, store: Bool) -> Void) {
+    fileprivate func setNumberOfIcons(_ locationHas:(_ repair: Bool, _ ATM: Bool, _ store: Bool) -> Void) {
         let carRepair: Bool = locationHasCarRepair()
         let atm: Bool = locationHasATM()
         let isStore: Bool = locationIsConvenienceStore()
@@ -213,14 +217,14 @@ class LocationView: UIView {
         } else {
             numberOfIcons = 0
         }
-        locationHas(repair: carRepair, ATM: atm, store: isStore)
+        locationHas(carRepair, atm, isStore)
     }
     
-    private func drawIcons() {
+    fileprivate func drawIcons() {
         setNumberOfIcons({
             (repair, ATM, store) -> Void in
             let width: CGFloat = (0.085)*self.nameView.frame.width
-            let frame: CGRect = CGRectMake(0, 0, width, width)
+            let frame: CGRect = CGRect(x: 0, y: 0, width: width, height: width)
             let imageView1 = UIImageView(frame: frame)
             let imageView2 = UIImageView(frame: frame)
             let imageView3 = UIImageView(frame:frame)
@@ -231,9 +235,9 @@ class LocationView: UIView {
                 self.iconLeft = imageView1
                 self.iconCenter = imageView2
                 self.iconRight = imageView3
-                let center: CGPoint = CGPointMake(x, y)
-                let center_left: CGPoint = CGPointMake(x-1.5*width, y)
-                let center_right: CGPoint = CGPointMake(x+1.5*width, y)
+                let center: CGPoint = CGPoint(x: x, y: y)
+                let center_left: CGPoint = CGPoint(x: x-1.5*width, y: y)
+                let center_right: CGPoint = CGPoint(x: x+1.5*width, y: y)
                 self.iconCenter!.center = center
                 self.iconLeft!.center = center_left
                 self.iconRight!.center = center_right
@@ -247,8 +251,8 @@ class LocationView: UIView {
             } else if self.numberOfIcons == 2 {
                 self.iconLeft = imageView1
                 self.iconRight = imageView2
-                let center_left: CGPoint = CGPointMake(x-2*width/3, y)
-                let center_right: CGPoint = CGPointMake(x+2*width/3, y)
+                let center_left: CGPoint = CGPoint(x: x-2*width/3, y: y)
+                let center_right: CGPoint = CGPoint(x: x+2*width/3, y: y)
                 self.iconLeft!.center = center_left
                 self.iconRight!.center = center_right
 
@@ -267,7 +271,7 @@ class LocationView: UIView {
                 
             } else if self.numberOfIcons == 1 {
                 self.iconCenter = imageView1
-                let center: CGPoint = CGPointMake(x, y)
+                let center: CGPoint = CGPoint(x: x, y: y)
                 self.iconCenter!.center = center
 
                 if repair && !ATM && !store {
@@ -281,7 +285,7 @@ class LocationView: UIView {
         })
     }
     
-    func longTap(sender: UIGestureRecognizer) {
+    func longTap(_ sender: UIGestureRecognizer) {
         delegate?.initializeLongPress(self, sender: sender)
         
     }
@@ -289,24 +293,24 @@ class LocationView: UIView {
     func addPreviewToSubview() {
         
         let widgetWidth: CGFloat = (0.35)*self.frame.width
-        let frame: CGRect = CGRectMake(0, 0, widgetWidth, widgetWidth)
+        let frame: CGRect = CGRect(x: 0, y: 0, width: widgetWidth, height: widgetWidth)
         let smallView: UIImageView = UIImageView(frame: frame)
         smallView.tag = 9
         smallView.roundView()
         smallView.image = self.locationImageView.image
         let center: CGPoint =
-            CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2)
+            CGPoint(x: self.bounds.size.width/2, y: self.bounds.size.height/2)
         smallView.center = center
         smallView.alpha = 0
         self.addSubview(smallView)
-        UIView.animateWithDuration(0.35, delay: 0, options: .CurveEaseIn, animations: {
+        UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseIn, animations: {
             smallView.alpha = 1 }, completion:{_ in})
     }
     
-    func recogSwipe(sender: UISwipeGestureRecognizer) {
-        if sender.direction == .Left {
+    func recogSwipe(_ sender: UISwipeGestureRecognizer) {
+        if sender.direction == .left {
             delegate?.handleSwipeLeft(self, sender: sender)
-        } else if sender.direction == .Right {
+        } else if sender.direction == .right {
             delegate?.handleSwipeRight(self, sender: sender)
         }
     }
@@ -319,10 +323,10 @@ class LocationView: UIView {
         longPress!.allowableMovement = self.bounds.width/8
         leftSwipe = UISwipeGestureRecognizer(
             target: self, action: #selector(LocationView.recogSwipe(_:)))
-        leftSwipe?.direction = .Left
+        leftSwipe?.direction = .left
         rightSwipe = UISwipeGestureRecognizer(
             target: self, action: #selector(LocationView.recogSwipe(_:)))
-        rightSwipe?.direction = .Right
+        rightSwipe?.direction = .right
         self.addGestureRecognizer(longPress!)
         self.addGestureRecognizer(rightSwipe!)
         self.addGestureRecognizer(leftSwipe!)
@@ -350,6 +354,35 @@ class LocationView: UIView {
     }
 }
 
+//MARK: - DVDelegate
+extension LocationView: DualViewDelegate {
+    
+    func undoSwipeAction(onView view: DualView, sender: UISwipeGestureRecognizer) {
+        if sender.direction == .left {
+            if let dualView = self.dualView {
+                dualView.lhs!.backgroundColor = DualView.BGColor
+                dualView.lhs_icon!.image = UIImage(named: "MarkerFilled-100")
+            }
+        } else if sender.direction == .right {
+            if let dualView = self.dualView {
+                dualView.rhs!.backgroundColor = DualView.BGColor
+                dualView.rhs_icon!.image = UIImage(named: "PhoneFilled-100")
+            }
+        }
+        if let preview: UIView = self.viewWithTag(9) {
+            UIView.animate(withDuration: 0.35, animations: {
+                preview.center.x = self.bounds.width/2
+                preview.center.y = self.bounds.height/2
+            })
+        }
+    }
+}
+
+protocol DualViewDelegate: class {
+    func undoSwipeAction(onView view: DualView, sender: UISwipeGestureRecognizer)
+}
+
+//MARK: - DualView
 class DualView: UIView {
     
     var rhs: UIView?
@@ -357,13 +390,15 @@ class DualView: UIView {
     var lhs: UIView?
     var lhs_icon: UIImageView?
     
+    weak var delegate: DualViewDelegate?
+    
     static let BGColor: UIColor? =
     UIColor(red:242/255.0, green:222/255.0, blue: 220/225.0, alpha:1.0)
     
-    private func setupViews(frame: CGRect) {
+    fileprivate func setupViews(_ frame: CGRect) {
         let width: CGFloat = frame.size.width/2
-        let lhs_frame: CGRect = CGRectMake(0, 0, width, frame.size.height)
-        let rhs_frame: CGRect = CGRectMake(width, 0, width, frame.size.height)
+        let lhs_frame: CGRect = CGRect(x: 0, y: 0, width: width, height: frame.size.height)
+        let rhs_frame: CGRect = CGRect(x: width, y: 0, width: width, height: frame.size.height)
         rhs = UIView(frame: rhs_frame)
         lhs = UIView(frame: lhs_frame)
         rhs?.backgroundColor = DualView.BGColor
@@ -373,19 +408,19 @@ class DualView: UIView {
         self.addSubview(lhs!)
     }
     
-    private func setupViewIcons(frame: CGRect) {
+    fileprivate func setupViewIcons(_ frame: CGRect) {
         let width: CGFloat = frame.size.width/2
         let lhs_icon_x: CGFloat = frame.size.width/6
         let rhs_icon_x: CGFloat = frame.size.width/3
-        let iconFrame: CGRect = CGRectMake(0, 0, width/4, width/4)
+        let iconFrame: CGRect = CGRect(x: 0, y: 0, width: width/4, height: width/4)
         rhs_icon = UIImageView(frame: iconFrame)
         rhs_icon?.image = UIImage(named: "PhoneFilled-100")
-        rhs_icon?.center = CGPointMake(rhs_icon_x, frame.height/2)
+        rhs_icon?.center = CGPoint(x: rhs_icon_x, y: frame.height/2)
         rhs?.addSubview(rhs_icon!)
         
         lhs_icon = UIImageView(frame: iconFrame)
         lhs_icon?.image = UIImage(named: "MarkerFilled-100")
-        lhs_icon?.center = CGPointMake(lhs_icon_x, frame.height/2)
+        lhs_icon?.center = CGPoint(x: lhs_icon_x, y: frame.height/2)
         lhs?.addSubview(lhs_icon!)
     }
     
@@ -400,6 +435,82 @@ class DualView: UIView {
     }
 }
 
+//MARK: - RatingView
+class RatingView: UIView {
+    
+    fileprivate var stars: [UIImageView] = [UIImageView]()
+    var rating: Float = 0 {
+        didSet {
+            maxRating = ceil(rating)
+            if rating > 5 { maxRating = 5 }
+            else if rating < 0 { maxRating = 0 }
+            loadRating()
+            print(rating)
+            
+        }
+    }
+    fileprivate var maxRating: Float?
+    
+    fileprivate func initStars() {
+        let width: CGFloat = self.bounds.size.width/5
+        let height: CGFloat = self.bounds.size.height
+        let center_x: CGFloat = self.bounds.size.width/10
+        let center_y: CGFloat = self.bounds.size.height/2
+        let frame: CGRect = CGRect(x: 0, y: 0, width: width, height: height)
+        for i in 1...5 {
+            let j: CGFloat = CGFloat(2*i - 1)
+            stars.append(UIImageView().then {
+                $0.image = (UIImage(named: "Star"))
+                $0.frame = frame
+                $0.center = CGPoint(x: j*center_x, y: center_y)
+                self.addSubview($0)
+                })
+        }
+    }
+    
+    func loadRating() {
+        let max: Int = Int(maxRating!)
+        for i in 0..<max {
+            let imageView = stars[i]
+            imageView.image = UIImage(named: "StarFilled")
+            if rating >= Float(i+1) {
+                imageView.layer.mask = nil
+                imageView.isHidden = false
+            } else if rating > Float(i) && rating < Float(i+1) {
+                let maskLayer = CALayer()
+                let maskWidth: CGFloat =
+                    CGFloat(1.0-(Float(max)-rating))*imageView.bounds.width
+                let maskHeight: CGFloat = imageView.bounds.size.height
+                maskLayer.frame = CGRect(x: 0, y: 0, width: maskWidth, height: maskHeight)
+                maskLayer.backgroundColor = UIColor.black.cgColor
+                maskLayer.contents = UIImage(named: "StarFilled")!.cgImage
+                imageView.layer.mask = maskLayer
+                imageView.isHidden = false
+            } else {
+                imageView.layer.mask = nil
+                imageView.isHidden = true
+            }
+        }
+        if max == 0 {
+            for i in 0..<stars.count {
+                stars[i].image = UIImage(named: "Star")
+                stars[i].layer.mask = nil
+            }
+        }
+    }
+    
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        initStars()
+        self.backgroundColor = UIColor.clear
+    }
+    
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+}
 
 
 

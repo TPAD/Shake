@@ -12,15 +12,19 @@ import CoreLocation
 class ViewController: UIViewController {
     
     @IBOutlet weak var locationName: UILabel!
+    @IBOutlet weak var location: UIImageView!
     
-    var locationManager: CLLocationManager!
+    weak fileprivate var appDelegate: AppDelegate? =
+        UIApplication.shared.delegate as? AppDelegate
     var results: Array<NSDictionary>?
     var locationNames: [String?]?
     var address: String?
     var readyToSegue: Bool = false
-    var viewIsReadyToDisplay: Bool = false
-    var status = CLLocationManager.authorizationStatus()
-    var userCoord: CLLocationCoordinate2D?
+    var userCoord: CLLocationCoordinate2D? {
+        didSet{
+            print("location set");
+        }
+    }
     
     // MARK: - Override Functions
 
@@ -28,54 +32,46 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         locationName.text = "Gas Station"
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:
+        NotificationCenter.default.addObserver(self, selector:
         #selector(UIApplicationDelegate.applicationWillEnterForeground(_:)),
-        name: UIApplicationWillEnterForegroundNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:
+        name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector:
         #selector(ViewController.applicationWillEnterBackground(_:)),
-        name: UIApplicationDidEnterBackgroundNotification, object: nil)
+        name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
         
         setBackgroundImage()
+        
+        if let appDelegate = self.appDelegate {
+            let status = appDelegate.status as CLAuthorizationStatus
+            if status == .restricted || status == .denied {
+                Helper.requestPermission(self)
+            }
+        }
+        
+        /*let width: CGFloat = self.view.frame.width
+        let frame: CGRect = CGRectMake(0, 0, width, width/5)
+        let starView = RatingView(frame: frame)
+        starView.rating = 0.0
+        self.view.addSubview(starView)*/
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if !Reachability.isConnected() {
             self.view.offlineViewAppear()
             print("Not connected")
         }
         initialLoadView()
-        locationGetterSetup()
-    }
-
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-        //TODO: there is a better solution to this memory leak problem
-        let delayInSecs: Int64 = 3000000000
-        
-        let popTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, delayInSecs)
-        
-        dispatch_after(popTime, dispatch_get_main_queue(), {
-            if let manager = self.locationManager {
-                let query: String = "gas_station"
-                if self.status == .AuthorizedWhenInUse && Reachability.isConnected() {
-                    if let location = manager.location {
-                        Search.GSearh(query, location: location, getData: self.parse)
-                    }
-                }
-            }
-        })
     }
     
-    override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
-        super.motionBegan(motion, withEvent: event)
-        if (self.isViewLoaded() == true && self.view.window != nil) {
+    override func motionBegan(_ motion: UIEventSubtype, with event: UIEvent?) {
+        super.motionBegan(motion, with: event)
+        if (self.isViewLoaded == true && self.view.window != nil) {
             if let motion = event {
-                if motion.subtype == .MotionShake && readyToSegue {
-                    UIView.animateWithDuration(0.4, delay: 0.0, options:
-                        .CurveEaseOut, animations: {
+                if motion.subtype == .motionShake && readyToSegue {
+                    UIView.animate(withDuration: 0.4, delay: 0.0, options:
+                        .curveEaseOut, animations: {
                             self.locationName.alpha = 0
-                            self.locationName.horizontalShakeAnimation()
                         }, completion: { _ in
                             self.goToDetail(self)
                     })
@@ -84,78 +80,42 @@ class ViewController: UIViewController {
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if let destination = segue.destinationViewController as? DestinationViewController {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let destination = segue.destination as? DestinationViewController {
             if let data = results {
                 destination.address = self.address
+                destination.userCoords = userCoord
                 destination.results = data
                 destination.locationNames = self.locationNames
             }
         }
     }
-    
-    //MARK: - 
-    
-    func locationGetterSetup() {
-        if status != .Restricted && status != .Denied {
-            self.locationManager = CLLocationManager()
-            if status == .NotDetermined {
-                self.locationManager.requestWhenInUseAuthorization()
-            }
-            if CLLocationManager.locationServicesEnabled() {
-                locationManager.delegate = self
-                locationManager.distanceFilter = 100.0
-                locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-                locationManager.startUpdatingLocation()
-                
-            }
-        } else if status == .AuthorizedAlways {
-            print("App should not have this control")
-        } else {
-            // navigate to settings so that user may turn on location services
-            Helper.navigateToSettingsViaAlert(self)
-        }
-    }
 
-    func goToDetail(sender: AnyObject) {
-        self.performSegueWithIdentifier("toDetail", sender: sender)
-    }
-    
-    func reverseGeocodeCoordinate(coordinate: CLLocationCoordinate2D) {
-        
-        let geocoder = GMSGeocoder()
-        
-        geocoder.reverseGeocodeCoordinate(coordinate, completionHandler: {
-            response, error in
-            if error == nil {
-                if let address = response?.firstResult() {
-                    let lines = address.lines! as [String]
-                    self.address = lines.joinWithSeparator("\n")
-                }
-            } else {
-                print("Address error: \(error)")
-            }
-        })
+    func goToDetail(_ sender: AnyObject) {
+        self.performSegue(withIdentifier: "toDetail", sender: sender)
     }
     
     func setBackgroundImage() {
         let view: UIImageView = UIImageView(frame: self.view.frame)
         view.image = UIImage(named: "gas_station")
     
-        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.ExtraLight)
+        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.extraLight)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         //fill the view
         blurEffectView.frame = self.view.frame
-        blurEffectView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(blurEffectView)
         
-        self.view.insertSubview(view, atIndex: 0)
+        self.view.insertSubview(view, at: 0)
     }
     
-    func applicationWillEnterForeground(notification: NSNotification) {
+    func applicationWillEnterForeground(_ notification: Notification) {
         print("did enter foreground")
-        if status == .Restricted || status == .Denied {
-            Helper.relaunchAppNotification(self)
+        if let appDelegate = appDelegate {
+            let status = appDelegate.status
+            if status == .restricted || status == .denied {
+                Helper.relaunchAppAlert(self)
+            }
         }
         if !Reachability.isConnected() {
             self.view.offlineViewDisappear()
@@ -166,64 +126,40 @@ class ViewController: UIViewController {
         }
     }
     
-    func applicationWillEnterBackground(notification: NSNotification) {
+    func applicationWillEnterBackground(_ notification: Notification) {
         print("did enter background")
     }
     
-    @IBAction func testSegue(sender: AnyObject) {
-        self.performSegueWithIdentifier("toDetail", sender: self)
+    @IBAction func testSegue(_ sender: AnyObject) {
+        self.performSegue(withIdentifier: "toDetail", sender: self)
     }
     
-    func parse(json: [NSDictionary]?) {
+    func parse(_ json: [NSDictionary]?) {
         let array: [String?]
         if let data = json {
             array = data.map({($0["name"] as? String)})
             self.results = data
             self.locationNames = array
         }
-        
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+        //UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+        if let appDelegate = appDelegate {
+            if let address = appDelegate.address, let manager = appDelegate.locationManager {
+                self.address = address
+                if let location = manager.location {
+                    self.userCoord = location.coordinate
+                }
+            }
+        }
         readyToSegue = true
         print("done")
-        self.locationManager.stopUpdatingLocation()
     }
     
     
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
-    
-}
 
-// MARK: - Location Manager Delegate
-
-extension ViewController: CLLocationManagerDelegate {
-    
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus
-        status: CLAuthorizationStatus) {
-        if status == .AuthorizedWhenInUse {
-            locationManager.requestLocation()
-        }
-    }
-    
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            let value: CLLocationCoordinate2D = (location.coordinate)
-            self.userCoord = location.coordinate
-            reverseGeocodeCoordinate(value)
-            /*let query: String = "gas_station"
-            if status == .AuthorizedWhenInUse && Reachability.isConnected() {
-                if let location = manager.location {
-                    Search.GSearh(query, location: location, getData: parse)
-                }
-            }*/
-        }
-    }
-    
-    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-        print("Location Manager Error: \(error)")
-    }
 }
 
 //MARK: - Initial Load Animation
@@ -231,29 +167,50 @@ extension ViewController: CLLocationManagerDelegate {
 extension ViewController {
     
     func initialLoadView() {
+        let mainView = UIView(frame: self.view.frame).then {
+            $0.backgroundColor = UIColor.white
+        }
+        let logo = UIImageView().then {
+            $0.frame.size.width =  0.35*(mainView.frame.width)
+            $0.frame.size.height = 0.35*(mainView.frame.width)
+            $0.center = mainView.center
+            $0.image = UIImage(named: "ShakeLogo")
+        }
         
-        let mainView: UIView = UIView(frame: self.view.frame)
-        mainView.backgroundColor = UIColor.whiteColor()
-        let width: CGFloat = 0.35*(mainView.frame.width)
-        let logoView: UIImageView =
-            UIImageView(frame: CGRectMake(0, 0, width, width))
-        logoView.center = mainView.center
-        logoView.image = UIImage(named: "ShakeLogo")
+        let progress = UIProgressView().then {
+            $0.frame.size.width = mainView.frame.width
+            $0.frame.origin.y = mainView.frame.height - 2*$0.frame.height
+            $0.trackTintColor = UIColor.black
+            $0.progressTintColor = UIColor.blue
+            let transform = CGAffineTransform(scaleX: 1.0, y: 3.0);
+            $0.transform = transform;
+        }
         
-        mainView.addSubview(logoView)
+        if let appDelegate = self.appDelegate {
+            if let manager = appDelegate.locationManager {
+                
+                if let location = manager.location {
+                    let query: String = "gas_station"
+                    Search.GSearh(query, location: location, parser: self.parse)
+                }
+            }
+        }
+
+        mainView.addSubview(logo)
+        mainView.addSubview(progress)
         self.view.addSubview(mainView)
-        initialLoadAnimation(mainView, image: logoView)
+        initialLoadAnimation(mainView, image: logo)
     }
     
-    func initialLoadAnimation(view: UIView, image: UIImageView) {
+    func initialLoadAnimation(_ view: UIView, image: UIImageView) {
         image.rotationAnimation()
         
         let delayInSeconds: Int64  = 800000000
         
-        let popTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds)
+        let popTime: DispatchTime = DispatchTime.now() + Double(delayInSeconds) / Double(NSEC_PER_SEC)
         
-        dispatch_after(popTime, dispatch_get_main_queue(), {
-            UIView.animateWithDuration(0.80, delay: 0.05, options: .CurveEaseInOut, animations: {
+        DispatchQueue.main.asyncAfter(deadline: popTime, execute: {
+            UIView.animate(withDuration: 0.80, delay: 0.05, options: UIViewAnimationOptions(), animations: {
                 image.center.y -= (view.frame.height)
                 }, completion: {
                     _ -> Void in
@@ -262,12 +219,14 @@ extension ViewController {
         });
     }
     
-    func fadeOut(view: UIView) {
-        UIView.animateWithDuration(0.5, delay: 0, options: .CurveEaseInOut, animations: {
+    func fadeOut(_ view: UIView) {
+        UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions(), animations: {
             view.alpha = 0
+            
             }, completion: {
                 _ -> Void in
                 view.removeFromSuperview()
+                
         })
         
     }

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -20,34 +21,30 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Shake to find the nearest" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rIY-e1-kr6">
-                                <rect key="frame" x="75" y="120" width="225" height="84"/>
                                 <fontDescription key="fontDescription" name="PingFangHK-Thin" family="PingFang HK" pointSize="30"/>
-                                <color key="textColor" red="0.96078431369999995" green="0.94117647059999998" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.96078431369999995" green="0.94117647059999998" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gasStation" translatesAutoresizingMaskIntoConstraints="NO" id="8vK-np-5Gg">
-                                <rect key="frame" x="131" y="311" width="113" height="113"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="8vK-np-5Gg" secondAttribute="height" id="Dw4-SB-Gb9"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="..." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SnR-zU-YN1">
-                                <rect key="frame" x="75" y="204" width="225" height="84"/>
                                 <fontDescription key="fontDescription" name="PingFangHK-Thin" family="PingFang HK" pointSize="30"/>
-                                <color key="textColor" red="0.96078431369999995" green="0.94117647059999998" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.96078431369999995" green="0.94117647059999998" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4LZ-QM-Oip">
-                                <rect key="frame" x="164" y="537" width="46" height="30"/>
                                 <state key="normal" title="Button">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="testSegue:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xwt-g1-pz2"/>
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" red="0.76078431369999999" green="0.27450980390000002" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.76078431369999999" green="0.27450980390000002" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="SnR-zU-YN1" firstAttribute="width" secondItem="rIY-e1-kr6" secondAttribute="width" id="4eg-L0-kWc"/>
                             <constraint firstItem="SnR-zU-YN1" firstAttribute="height" secondItem="rIY-e1-kr6" secondAttribute="height" id="6DK-LB-BQd"/>
@@ -63,15 +60,15 @@
                             <constraint firstItem="rIY-e1-kr6" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="100" id="t0V-k2-1i7"/>
                         </constraints>
                     </view>
-                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>
+                        <outlet property="location" destination="8vK-np-5Gg" id="48w-Za-liE"/>
                         <outlet property="locationName" destination="SnR-zU-YN1" id="pTk-m7-MvT"/>
                         <segue destination="iif-ih-lHL" kind="presentation" identifier="toDetail" modalTransitionStyle="crossDissolve" id="eI6-ZF-LS4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="447.5" y="388.5"/>
+            <point key="canvasLocation" x="166" y="277"/>
         </scene>
         <!--Destination View Controller-->
         <scene sceneID="00Q-b2-ilI">
@@ -86,19 +83,41 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Distance" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qfz-Or-Y32">
-                                <rect key="frame" x="109" y="511" width="156" height="56"/>
                                 <fontDescription key="fontDescription" name="PingFangHK-Thin" family="PingFang HK" pointSize="40"/>
-                                <color key="textColor" red="0.93958262790000002" green="0.96078431369999995" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.93958262790000002" green="0.96078431369999995" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AI0-L9-Fl2">
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="AI0-L9-Fl2" secondAttribute="height" id="TMj-Ox-FDL"/>
+                                </constraints>
+                                <state key="normal" image="Back"/>
+                                <connections>
+                                    <action selector="backButtonAction:" destination="iif-ih-lHL" eventType="touchUpInside" id="ERI-RO-sSY"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k8P-Vb-n0w">
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="k8P-Vb-n0w" secondAttribute="height" id="uv6-Te-s4d"/>
+                                </constraints>
+                                <state key="normal" image="Add"/>
+                                <connections>
+                                    <action selector="addLocationAction:" destination="iif-ih-lHL" eventType="touchUpInside" id="QFF-PC-eCc"/>
+                                </connections>
+                            </button>
                         </subviews>
-                        <color key="backgroundColor" red="0.76078431372549016" green="0.27450980392156865" blue="0.26666666666666666" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.76078431372549016" green="0.27450980392156865" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="AI0-L9-Fl2" firstAttribute="leading" secondItem="Z3h-VN-rbC" secondAttribute="leading" id="Ibh-SS-5KY"/>
+                            <constraint firstItem="AI0-L9-Fl2" firstAttribute="width" secondItem="Z3h-VN-rbC" secondAttribute="width" multiplier="0.1" id="MZn-nd-iEa"/>
+                            <constraint firstItem="k8P-Vb-n0w" firstAttribute="centerX" secondItem="Z3h-VN-rbC" secondAttribute="centerX" id="cju-Qn-oj4"/>
+                            <constraint firstItem="utl-pZ-bhp" firstAttribute="top" secondItem="k8P-Vb-n0w" secondAttribute="bottom" constant="20" id="kGJ-vZ-csC"/>
+                            <constraint firstItem="AI0-L9-Fl2" firstAttribute="top" secondItem="cPZ-Zm-meI" secondAttribute="bottom" id="lZm-uY-Kgv"/>
+                            <constraint firstItem="k8P-Vb-n0w" firstAttribute="width" secondItem="Z3h-VN-rbC" secondAttribute="width" multiplier="0.15" id="pKr-eR-rbw"/>
                             <constraint firstItem="utl-pZ-bhp" firstAttribute="top" secondItem="Qfz-Or-Y32" secondAttribute="bottom" constant="100" id="rxE-GK-XMQ"/>
                             <constraint firstItem="Qfz-Or-Y32" firstAttribute="centerX" secondItem="Z3h-VN-rbC" secondAttribute="centerX" id="zbu-bo-lCx"/>
                         </constraints>
                     </view>
-                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>
                         <outlet property="distanceLabel" destination="Qfz-Or-Y32" id="nv4-vL-Yf0"/>
                     </connections>
@@ -109,6 +128,8 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Add" width="50" height="50"/>
+        <image name="Back" width="20" height="20"/>
         <image name="gasStation" width="100" height="100"/>
     </resources>
 </document>
