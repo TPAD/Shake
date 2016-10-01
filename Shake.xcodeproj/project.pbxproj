@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		1C4C6AB8747BCA291F316878 /* Pods_Shake.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFF043A7DFB50B25B140AED8 /* Pods_Shake.framework */; };
+		34071C711D997A6300C17D00 /* Loader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34071C701D997A6300C17D00 /* Loader.swift */; };
+		3484E0D81D9C49C100038F25 /* GPlace.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3484E0D71D9C49C100038F25 /* GPlace.xib */; };
+		3484E0DA1D9DA7DF00038F25 /* CosmosDistrib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3484E0D91D9DA7DF00038F25 /* CosmosDistrib.swift */; };
 		E722B32E1CFC316700AD2A13 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = E722B32D1CFC316700AD2A13 /* Search.swift */; };
 		E72B55321CFD749B000CD07E /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72B55311CFD749B000CD07E /* Reachability.swift */; };
 		E75034941CFBA18A003F5625 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75034931CFBA18A003F5625 /* Helper.swift */; };
@@ -22,6 +25,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		34071C701D997A6300C17D00 /* Loader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
+		3484E0D71D9C49C100038F25 /* GPlace.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GPlace.xib; sourceTree = "<group>"; };
+		3484E0D91D9DA7DF00038F25 /* CosmosDistrib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CosmosDistrib.swift; sourceTree = "<group>"; };
 		58AD71C10A886FCA1ED3E2C1 /* Pods-Shake.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shake.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Shake/Pods-Shake.debug.xcconfig"; sourceTree = "<group>"; };
 		AFF043A7DFB50B25B140AED8 /* Pods_Shake.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Shake.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E722B32D1CFC316700AD2A13 /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
@@ -93,15 +99,18 @@
 				E7F7CEA21CFB8EAA00BA7F1D /* AppDelegate.swift */,
 				E7F7CEA41CFB8EAA00BA7F1D /* ViewController.swift */,
 				E75034951CFBAFC3003F5625 /* DestinationViewController.swift */,
+				3484E0D91D9DA7DF00038F25 /* CosmosDistrib.swift */,
 				E722B32D1CFC316700AD2A13 /* Search.swift */,
 				E75034931CFBA18A003F5625 /* Helper.swift */,
 				E72B55311CFD749B000CD07E /* Reachability.swift */,
 				E7A843181D0CE6AA0061C535 /* LocationView.swift */,
+				34071C701D997A6300C17D00 /* Loader.swift */,
 				E7F7CEA61CFB8EAA00BA7F1D /* Main.storyboard */,
 				E7F7CEAC1CFB8EAA00BA7F1D /* Assets.xcassets */,
 				E7F7CEAE1CFB8EAA00BA7F1D /* LaunchScreen.storyboard */,
 				E7F7CEB11CFB8EAA00BA7F1D /* Info.plist */,
 				E7F7CEA91CFB8EAA00BA7F1D /* Shake.xcdatamodeld */,
+				3484E0D71D9C49C100038F25 /* GPlace.xib */,
 			);
 			path = Shake;
 			sourceTree = "<group>";
@@ -172,6 +181,7 @@
 				E7F7CEB01CFB8EAA00BA7F1D /* LaunchScreen.storyboard in Resources */,
 				E7F7CEAD1CFB8EAA00BA7F1D /* Assets.xcassets in Resources */,
 				E7F7CEA81CFB8EAA00BA7F1D /* Main.storyboard in Resources */,
+				3484E0D81D9C49C100038F25 /* GPlace.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,11 +243,13 @@
 				E72B55321CFD749B000CD07E /* Reachability.swift in Sources */,
 				E7A843191D0CE6AA0061C535 /* LocationView.swift in Sources */,
 				E7F7CEAB1CFB8EAA00BA7F1D /* Shake.xcdatamodeld in Sources */,
+				3484E0DA1D9DA7DF00038F25 /* CosmosDistrib.swift in Sources */,
 				E7F7CEA51CFB8EAA00BA7F1D /* ViewController.swift in Sources */,
 				E7F7CEA31CFB8EAA00BA7F1D /* AppDelegate.swift in Sources */,
 				E722B32E1CFC316700AD2A13 /* Search.swift in Sources */,
 				E75034941CFBA18A003F5625 /* Helper.swift in Sources */,
 				E75034961CFBAFC3003F5625 /* DestinationViewController.swift in Sources */,
+				34071C711D997A6300C17D00 /* Loader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

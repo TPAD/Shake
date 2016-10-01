@@ -17,17 +17,12 @@ class ViewController: UIViewController {
     weak fileprivate var appDelegate: AppDelegate? =
         UIApplication.shared.delegate as? AppDelegate
     var results: Array<NSDictionary>?
+    var resultDetail: Array<NSDictionary>?
     var locationNames: [String?]?
-    var address: String?
     var readyToSegue: Bool = false
-    var userCoord: CLLocationCoordinate2D? {
-        didSet{
-            print("location set");
-        }
-    }
+    var userCoord: CLLocationCoordinate2D?
     
     // MARK: - Override Functions
-
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -47,19 +42,12 @@ class ViewController: UIViewController {
                 Helper.requestPermission(self)
             }
         }
-        
-        /*let width: CGFloat = self.view.frame.width
-        let frame: CGRect = CGRectMake(0, 0, width, width/5)
-        let starView = RatingView(frame: frame)
-        starView.rating = 0.0
-        self.view.addSubview(starView)*/
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if !Reachability.isConnected() {
             self.view.offlineViewAppear()
-            print("Not connected")
         }
         initialLoadView()
     }
@@ -83,10 +71,10 @@ class ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destination = segue.destination as? DestinationViewController {
             if let data = results {
-                destination.address = self.address
                 destination.userCoords = userCoord
                 destination.results = data
                 destination.locationNames = self.locationNames
+                destination.resultDetail = self.resultDetail
             }
         }
     }
@@ -110,7 +98,6 @@ class ViewController: UIViewController {
     }
     
     func applicationWillEnterForeground(_ notification: Notification) {
-        print("did enter foreground")
         if let appDelegate = appDelegate {
             let status = appDelegate.status
             if status == .restricted || status == .denied {
@@ -120,7 +107,6 @@ class ViewController: UIViewController {
         if !Reachability.isConnected() {
             self.view.offlineViewDisappear()
             self.view.offlineViewAppear()
-            print("not connected")
         } else {
             self.view.offlineViewDisappear()
         }
@@ -135,25 +121,49 @@ class ViewController: UIViewController {
     }
     
     func parse(_ json: [NSDictionary]?) {
+        if json == nil { Helper.connectionHandler(host: self) }
         let array: [String?]
         if let data = json {
             array = data.map({($0["name"] as? String)})
             self.results = data
             self.locationNames = array
         }
-        //UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         if let appDelegate = appDelegate {
-            if let address = appDelegate.address, let manager = appDelegate.locationManager {
-                self.address = address
+            if let manager = appDelegate.locationManager {
                 if let location = manager.location {
                     self.userCoord = location.coordinate
                 }
+            }
+        }
+        resultDetail =  [NSDictionary]()
+        if !Reachability.isConnected() { return }
+        // Think about the performance implications of doing this
+        // Should not be too much overhead on 20 queries
+        //
+        for (i, _) in results!.enumerated() {
+            let place_id  = results?[i]["place_id"] as? String
+            if let id = place_id {
+                Search.detailQuery(byPlaceID: id, returnData: loadDetails)
             }
         }
         readyToSegue = true
         print("done")
     }
     
+    // completion block for query
+    // TODO: - results are appended to array as the asynchronous requests are
+    // completed. This is undesired behavior. Results should append sequentially
+    func loadDetails(_ details: NSDictionary?) {
+        if let data = details {
+            guard let result = data["result"] as? NSDictionary else {
+                // TODO: - Handle this error
+                return
+            }
+            resultDetail!.append(result)
+        } else {
+            //TODO: - handle this error
+        }
+    }
     
     
     deinit {
@@ -177,27 +187,18 @@ extension ViewController {
             $0.image = UIImage(named: "ShakeLogo")
         }
         
-        let progress = UIProgressView().then {
-            $0.frame.size.width = mainView.frame.width
-            $0.frame.origin.y = mainView.frame.height - 2*$0.frame.height
-            $0.trackTintColor = UIColor.black
-            $0.progressTintColor = UIColor.blue
-            let transform = CGAffineTransform(scaleX: 1.0, y: 3.0);
-            $0.transform = transform;
-        }
-        
         if let appDelegate = self.appDelegate {
             if let manager = appDelegate.locationManager {
                 
                 if let location = manager.location {
                     let query: String = "gas_station"
-                    Search.GSearh(query, location: location, parser: self.parse)
+                    Search.GSearh(query, location: location, parser: self.parse,
+                                  host: self)
                 }
             }
         }
 
         mainView.addSubview(logo)
-        mainView.addSubview(progress)
         self.view.addSubview(mainView)
         initialLoadAnimation(mainView, image: logo)
     }

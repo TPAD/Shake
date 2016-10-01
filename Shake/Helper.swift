@@ -41,6 +41,27 @@ public struct Helper {
         host.present(alertController, animated: true, completion: nil);
     }
     
+    static func connectionHandler(host: UIViewController) {
+        if !Reachability.isConnected() {
+            let view: UIView = UIView().then {
+                $0.frame.size.width = host.view.bounds.width
+                $0.frame.size.height = (0.1)*host.view.bounds.height
+                $0.frame.origin.y = (0.9)*host.view.bounds.height
+                $0.backgroundColor = UIColor.red
+            }
+            host.view.addSubview(view)
+            let label: UILabel = UILabel().then {
+                $0.textColor = UIColor.white
+                $0.text = "No Internet connection detected"
+                $0.font = UIFont(name: "Avenir", size: 16.0)
+                $0.sizeToFit()
+                $0.center.x = view.center.x
+                $0.center.y = view.center.y
+            }
+            view.addSubview(label)
+        }
+    }
+    
     struct Colors {
         static var mediumSeaweed: UIColor {
             return UIColor(red:60/255.0, green:179/255.0,
@@ -51,10 +72,15 @@ public struct Helper {
             return UIColor(red:205/255.0, green:35/255.0,
                            blue:35/255.0, alpha:0.8)
         }
+        
+        static var new: UIColor {
+            return UIColor(red:0/255.0, green:96/255.0,
+                           blue:192/255.0, alpha:1)
+        }
     }
 }
 
-//MARK: - EXTENSIONS ON UIKit CLASSES
+//MARK: - EXTENSIONS on UIKit classes
 public extension UIView {
     
     func rotationAnimation() {
@@ -71,21 +97,22 @@ public extension UIView {
     func roundView() {
         let white: UIColor =
             UIColor(red:255/255.0, green:255/255.0, blue:255/255.0, alpha:0.7)
-        self.layer.cornerRadius = self.frame.height/2
-        self.layer.borderWidth = 3
-        self.layer.masksToBounds = false
-        self.layer.borderColor = white.cgColor
-        self.clipsToBounds = true
+        layer.cornerRadius = self.frame.height/2
+        layer.borderWidth = 6
+        layer.masksToBounds = false
+        layer.borderColor = white.cgColor
+        clipsToBounds = true
     }
     
     func offlineViewAppear() {
+        // sucks but ensures only one kind of these views is present
+        self.offlineViewDisappear()
         let viewWidth = self.frame.width
         let viewHeight = 0.075*self.frame.height
         let view_y = self.frame.height - viewHeight
         let viewFrame: CGRect = CGRect(x: 0, y: view_y, width: viewWidth, height: viewHeight)
-        let view = UIView(frame: viewFrame)
+        let view = OfflineView(frame: viewFrame)
         view.backgroundColor = UIColor.white
-        view.tag = 1
         
         let label = UILabel(frame: CGRect(x: 0, y: viewFrame.height/4, width: 0, height: 0))
         
@@ -102,15 +129,25 @@ public extension UIView {
     
     func offlineViewDisappear() {
         for subview in self.subviews {
-            if subview.tag == 1 {
+            if subview.isKind(of: OfflineView.self) {
                 subview.removeFromSuperview()
             }
         }
     }
+    
+    func pushTransition(duration:CFTimeInterval) {
+        let animation:CATransition = CATransition()
+        animation.timingFunction = CAMediaTimingFunction(name:
+            kCAMediaTimingFunctionEaseInEaseOut)
+        animation.type = kCATransitionPush
+        animation.subtype = kCATransitionFromLeft
+        animation.duration = duration
+        self.layer.add(animation, forKey: kCATransitionPush)
+    }
 }
 
 public extension CLLocation {
-    
+    // converts distance in meters to miles
     func distanceInMilesFromLocation(_ location: CLLocation) -> Double {
         let distanceMeters = self.distance(from: location)
         return distanceMeters*0.00062137
@@ -134,14 +171,15 @@ public extension String {
         var filteredNum: String = self
         for character in charactersToReplace {
             filteredNum = filteredNum.replacingOccurrences(
-                    of: character, with: "")
+                of: character, with: "")
         }
         return filteredNum
     }
 }
 
+// adjusts height
 public extension UILabel {
-    
+
     func requiredHeight() -> CGFloat {
         let frame: CGRect = CGRect(x: 0, y: 0, width: self.frame.width,  height: CGFloat.greatestFiniteMagnitude)
         let new: UILabel = UILabel(frame: frame)
@@ -155,18 +193,9 @@ public extension UILabel {
     }
 }
 
-//MARK: - Syntactical Sugar
-
+//MARK: - Syntactical sugar for initialization
+// just keeps everything in one place
 public protocol Then {}
-
-/*extension Then where Self: Any {
-    
-    public func then(@noescape _ block: inout (Self) -> Void) -> Self {
-        var copy = self
-        block(&copy)
-        return copy
-    }
-}*/
 
 extension Then where Self: AnyObject {
     
@@ -195,3 +224,7 @@ extension DoubleConvertible {
         return Self(double * 180 / M_PI)
     }
 }
+
+//MARK: - offline view
+//makes the view easier to identify and consequently easier to remove
+class OfflineView: UIView { }

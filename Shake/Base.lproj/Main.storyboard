@@ -82,45 +82,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Distance" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qfz-Or-Y32">
-                                <fontDescription key="fontDescription" name="PingFangHK-Thin" family="PingFang HK" pointSize="40"/>
-                                <color key="textColor" red="0.93958262790000002" green="0.96078431369999995" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AI0-L9-Fl2">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u2j-G2-4Gf">
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="AI0-L9-Fl2" secondAttribute="height" id="TMj-Ox-FDL"/>
-                                </constraints>
-                                <state key="normal" image="Back"/>
-                                <connections>
-                                    <action selector="backButtonAction:" destination="iif-ih-lHL" eventType="touchUpInside" id="ERI-RO-sSY"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k8P-Vb-n0w">
-                                <constraints>
-                                    <constraint firstAttribute="width" secondItem="k8P-Vb-n0w" secondAttribute="height" id="uv6-Te-s4d"/>
+                                    <constraint firstAttribute="width" constant="50" id="XPn-YV-m9v"/>
+                                    <constraint firstAttribute="height" constant="50" id="thJ-s0-46G"/>
                                 </constraints>
                                 <state key="normal" image="Add"/>
-                                <connections>
-                                    <action selector="addLocationAction:" destination="iif-ih-lHL" eventType="touchUpInside" id="QFF-PC-eCc"/>
-                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.76078431372549016" green="0.27450980392156865" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="AI0-L9-Fl2" firstAttribute="leading" secondItem="Z3h-VN-rbC" secondAttribute="leading" id="Ibh-SS-5KY"/>
-                            <constraint firstItem="AI0-L9-Fl2" firstAttribute="width" secondItem="Z3h-VN-rbC" secondAttribute="width" multiplier="0.1" id="MZn-nd-iEa"/>
-                            <constraint firstItem="k8P-Vb-n0w" firstAttribute="centerX" secondItem="Z3h-VN-rbC" secondAttribute="centerX" id="cju-Qn-oj4"/>
-                            <constraint firstItem="utl-pZ-bhp" firstAttribute="top" secondItem="k8P-Vb-n0w" secondAttribute="bottom" constant="20" id="kGJ-vZ-csC"/>
-                            <constraint firstItem="AI0-L9-Fl2" firstAttribute="top" secondItem="cPZ-Zm-meI" secondAttribute="bottom" id="lZm-uY-Kgv"/>
-                            <constraint firstItem="k8P-Vb-n0w" firstAttribute="width" secondItem="Z3h-VN-rbC" secondAttribute="width" multiplier="0.15" id="pKr-eR-rbw"/>
-                            <constraint firstItem="utl-pZ-bhp" firstAttribute="top" secondItem="Qfz-Or-Y32" secondAttribute="bottom" constant="100" id="rxE-GK-XMQ"/>
-                            <constraint firstItem="Qfz-Or-Y32" firstAttribute="centerX" secondItem="Z3h-VN-rbC" secondAttribute="centerX" id="zbu-bo-lCx"/>
+                            <constraint firstItem="u2j-G2-4Gf" firstAttribute="centerX" secondItem="Z3h-VN-rbC" secondAttribute="centerX" id="tZh-WK-ajd"/>
+                            <constraint firstItem="utl-pZ-bhp" firstAttribute="top" secondItem="u2j-G2-4Gf" secondAttribute="bottom" constant="50" id="uuv-bH-33L"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="distanceLabel" destination="Qfz-Or-Y32" id="nv4-vL-Yf0"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bM5-Yd-BAd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -129,7 +104,6 @@
     </scenes>
     <resources>
         <image name="Add" width="50" height="50"/>
-        <image name="Back" width="20" height="20"/>
         <image name="gasStation" width="100" height="100"/>
     </resources>
 </document>

@@ -48,7 +48,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func locationGetterSetup() {
         if status != .restricted && status != .denied {
             self.locationManager = CLLocationManager()
-            //self.locationManager.requestAlwaysAuthorization()
             self.locationManager.requestWhenInUseAuthorization()
         }
         if CLLocationManager.locationServicesEnabled() {
@@ -57,9 +56,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             locationManager.startUpdatingLocation()
         }
-        /*else if status == .AuthorizedAlways {
-            print("App should not have this much control")
-        }*/
     }
     
     //MARK: - Location Manager Delegate Functions
@@ -79,47 +75,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             let here: CLLocationCoordinate2D = location.coordinate
             if let destination = destination {
                 calculateUserAngle(here, destination: destination)
-                print(angle)
-            }
-        }
-    }
-
-    /*func locationManager(_ manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation,
-                         fromLocation oldLocation: CLLocation) {
-        
-    }*/
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        let here: CLLocationCoordinate2D = manager.location!.coordinate
-        if let destination = destination {
-            calculateUserAngle(here, destination: destination)
-            var h = newHeading.magneticHeading
-            let h2 = newHeading.trueHeading // will be -1 if we have no location info
-            print("\(h) \(h2) ")
-            if h2 >= 0 {
-                h = h2
-            }
-            let cards = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
-            var dir = "N"
-            for (ix, card) in cards.enumerated() {
-                if h < 45.0/2.0 + 45.0*Double(ix) {
-                    dir = card
-                    break
-                }
-            }
-            
-            print(dir)
-            if let destinationVC: DestinationViewController =
-                topMostViewController() as? DestinationViewController {
-                if let deg = angle {
-                    //print("degrees of location: \(deg)")
-                    destinationVC.compass!.transform =
-                        CGAffineTransform(rotationAngle: CGFloat((deg - h) * M_PI/180))
-                    let dest: CLLocation = CLLocation(latitude: destination.latitude,
-                                                      longitude: destination.longitude)
-                    destinationVC.updateDistance(manager, destination: dest)
-                }
-                
             }
         }
     }
@@ -165,12 +120,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //MARK: - Application functions
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
         GMSServices.provideAPIKey(getApiKey())
         locationGetterSetup()
+        
         return true
     }
-
+    
+    func application(_ application: UIApplication, shouldRestoreApplicationState coder: NSCoder) -> Bool {
+        return true
+    }
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.

@@ -30,9 +30,6 @@ public struct Search {
     weak fileprivate static var appDelegate: AppDelegate? =
         UIApplication.shared.delegate as? AppDelegate
     
-    
-    // MARK: - Alamofire GET requests
-    
     private static func GSearchRequest(
         _ url: URLConvertible,
         method: HTTPMethod = .get,
@@ -45,6 +42,7 @@ public struct Search {
                 encoding: URLEncoding.default)
                 .responseJSON {
                 (response) -> Void in
+                print(response)
                 guard response.result.isSuccess else {
                     print("Error Fetching Details: \(response.result.error)")
                     parser(nil)
@@ -60,8 +58,13 @@ public struct Search {
     
     // MARK: - Search methods
     static func GSearh(_ query: String, location: CLLocation?,
-                       parser: @escaping ([NSDictionary]?)->Void) {
-        
+                       parser: @escaping ([NSDictionary]?)->Void,
+                       host: UIViewController?) {
+        if let current_vc = host {
+            if !Reachability.isConnected() {
+                current_vc.view.offlineViewAppear()
+            }
+        }
         let coordinate: CLLocationCoordinate2D?
         if let manager: CLLocation = location {
             coordinate = manager.coordinate
@@ -108,11 +111,13 @@ public struct Search {
         }
     }
     
-    static func retrieveImageByReference(ref: String, target: UIImageView) {
+    static func retrieveImageByReference(ref: String,
+                                         target: UIImageView,
+                                         maxWidth: Int) {
         if let apiKey = appDelegate?.getApiKey() {
             let params: Parameters =
                 [
-                 "maxwidth": "400",
+                 "maxwidth": "\(maxWidth)",
                  "photoreference":"\(ref)",
                  "key":"\(apiKey)"]
             
@@ -127,7 +132,9 @@ public struct Search {
                     print("Error: \(response.result.error)")
                     return
                 }
-                target.image = response.result.value
+                DispatchQueue.main.async {
+                    target.image = response.result.value
+                }
             }
         }
     }
