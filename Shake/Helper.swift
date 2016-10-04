@@ -12,12 +12,12 @@ public struct Helper {
         return DispatchQueue.main
     }
     
+    // requests the user for permission to use their location
     static func requestPermission(_ host: UIViewController) {
         let title: String = "Shake requires user's location to operate."
         let message: String = "Please authorize the use of your location."
         let alertController = UIAlertController(title: title,
                                                 message: message, preferredStyle: .alert)
-        
         let settingsAction = UIAlertAction(title: "OK", style: .default) {
             _ -> Void in
             let settingsUrl = URL(string: UIApplicationOpenSettingsURLString)
@@ -32,15 +32,15 @@ public struct Helper {
         host.present(alertController, animated: true, completion: nil);
     }
     
+    // notifies the user that they must relaunch the app to continue
     static func relaunchAppAlert(_ host: UIViewController) {
         let title: String = "Please relaunch the application"
-        
         let alertController =
             UIAlertController(title: title, message: "", preferredStyle: .alert)
-        
         host.present(alertController, animated: true, completion: nil);
     }
     
+    // used to display a message when us is offline
     static func connectionHandler(host: UIViewController) {
         if !Reachability.isConnected() {
             let view: UIView = UIView().then {
@@ -62,6 +62,19 @@ public struct Helper {
         }
     }
     
+    // returns the topmost view controller or nil
+    static func topMostViewController() -> UIViewController? {
+        let topController: UIViewController? =
+            UIApplication.shared.keyWindow?.rootViewController
+        if let top = topController {
+            let presentedController: UIViewController? = top.presentedViewController
+            if let top_most = presentedController {
+                return top_most
+            }
+        }
+        return nil
+    }
+    
     struct Colors {
         static var mediumSeaweed: UIColor {
             return UIColor(red:60/255.0, green:179/255.0,
@@ -76,6 +89,16 @@ public struct Helper {
         static var new: UIColor {
             return UIColor(red:0/255.0, green:96/255.0,
                            blue:192/255.0, alpha:1)
+        }
+        
+        static var blue: UIColor {
+            return UIColor(red: 78/255.0, green:147/255.0,
+                           blue:222/255.0, alpha: 1.0)
+        }
+        
+        static var green: UIColor {
+            return   UIColor(red:70/255.0, green:179/255.0,
+                             blue:173/255.0, alpha: 1.0)
         }
     }
 }
@@ -147,10 +170,27 @@ public extension UIView {
 }
 
 public extension CLLocation {
-    // converts distance in meters to miles
+    // converts distance in meters to miles 
     func distanceInMilesFromLocation(_ location: CLLocation) -> Double {
         let distanceMeters = self.distance(from: location)
         return distanceMeters*0.00062137
+    }
+}
+
+public extension CLLocationCoordinate2D {
+    // calculates angle between self and other location (bearing)
+    func angleTo(destination: CLLocationCoordinate2D) -> Double {
+        var x: Double = 0; var y: Double = 0
+        var deg: Double = 0; var delta_long: Double
+        // using the equation for bearing calculation
+        delta_long = destination.longitude - self.longitude
+        y = sin(delta_long) * cos(destination.latitude)
+        x = cos(self.latitude) * sin(destination.latitude) -
+            sin(self.latitude) * cos(destination.latitude)*cos(delta_long)
+        // need result in radians
+        deg = atan2(y, x).radiansToDegrees as! Double
+        // necessary adjustments for negative angles
+        return (deg < 0) ? -deg: 360-deg
     }
 }
 
@@ -166,6 +206,7 @@ public extension String {
         return false
     }
     
+    // appropriate formatting for a phone number
     func numberFormattedForCall() -> String {
         let charactersToReplace: [String] = ["(", ")", " ", "-"]
         var filteredNum: String = self

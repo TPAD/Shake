@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        locationName.text = "Gas Station"
+        locationName.text = "Convenience Store"
         NotificationCenter.default.addObserver(self, selector:
         #selector(UIApplicationDelegate.applicationWillEnterForeground(_:)),
         name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
@@ -133,9 +133,11 @@ class ViewController: UIViewController {
                 if let location = manager.location {
                     self.userCoord = location.coordinate
                 }
+                manager.stopUpdatingLocation()
             }
         }
-        resultDetail =  [NSDictionary]()
+        resultDetail = Array(repeating: NSDictionary(),
+                             count: results!.count)
         if !Reachability.isConnected() { return }
         // Think about the performance implications of doing this
         // Should not be too much overhead on 20 queries
@@ -143,7 +145,9 @@ class ViewController: UIViewController {
         for (i, _) in results!.enumerated() {
             let place_id  = results?[i]["place_id"] as? String
             if let id = place_id {
-                Search.detailQuery(byPlaceID: id, returnData: loadDetails)
+                Search.detailQuery(byPlaceID: id,
+                                   atIndex: i,
+                                   returnData: loadDetails)
             }
         }
         readyToSegue = true
@@ -153,18 +157,17 @@ class ViewController: UIViewController {
     // completion block for query
     // TODO: - results are appended to array as the asynchronous requests are
     // completed. This is undesired behavior. Results should append sequentially
-    func loadDetails(_ details: NSDictionary?) {
+    func loadDetails(_ details: NSDictionary?, _ index: Int?) {
         if let data = details {
             guard let result = data["result"] as? NSDictionary else {
                 // TODO: - Handle this error
                 return
             }
-            resultDetail!.append(result)
+            resultDetail![index!] = result
         } else {
             //TODO: - handle this error
         }
     }
-    
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -191,7 +194,7 @@ extension ViewController {
             if let manager = appDelegate.locationManager {
                 
                 if let location = manager.location {
-                    let query: String = "gas_station"
+                    let query: String = "convenience_store"
                     Search.GSearh(query, location: location, parser: self.parse,
                                   host: self)
                 }

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1C4C6AB8747BCA291F316878 /* Pods_Shake.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFF043A7DFB50B25B140AED8 /* Pods_Shake.framework */; };
 		34071C711D997A6300C17D00 /* Loader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34071C701D997A6300C17D00 /* Loader.swift */; };
+		3451ED0A1DA34574002AE775 /* GPLaceDetail.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3451ED091DA34574002AE775 /* GPLaceDetail.xib */; };
 		3484E0D81D9C49C100038F25 /* GPlace.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3484E0D71D9C49C100038F25 /* GPlace.xib */; };
 		3484E0DA1D9DA7DF00038F25 /* CosmosDistrib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3484E0D91D9DA7DF00038F25 /* CosmosDistrib.swift */; };
 		E722B32E1CFC316700AD2A13 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = E722B32D1CFC316700AD2A13 /* Search.swift */; };
@@ -26,6 +27,7 @@
 
 /* Begin PBXFileReference section */
 		34071C701D997A6300C17D00 /* Loader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
+		3451ED091DA34574002AE775 /* GPLaceDetail.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GPLaceDetail.xib; sourceTree = "<group>"; };
 		3484E0D71D9C49C100038F25 /* GPlace.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GPlace.xib; sourceTree = "<group>"; };
 		3484E0D91D9DA7DF00038F25 /* CosmosDistrib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CosmosDistrib.swift; sourceTree = "<group>"; };
 		58AD71C10A886FCA1ED3E2C1 /* Pods-Shake.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shake.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Shake/Pods-Shake.debug.xcconfig"; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				E7F7CEB11CFB8EAA00BA7F1D /* Info.plist */,
 				E7F7CEA91CFB8EAA00BA7F1D /* Shake.xcdatamodeld */,
 				3484E0D71D9C49C100038F25 /* GPlace.xib */,
+				3451ED091DA34574002AE775 /* GPLaceDetail.xib */,
 			);
 			path = Shake;
 			sourceTree = "<group>";
@@ -182,6 +185,7 @@
 				E7F7CEAD1CFB8EAA00BA7F1D /* Assets.xcassets in Resources */,
 				E7F7CEA81CFB8EAA00BA7F1D /* Main.storyboard in Resources */,
 				3484E0D81D9C49C100038F25 /* GPlace.xib in Resources */,
+				3451ED0A1DA34574002AE775 /* GPLaceDetail.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

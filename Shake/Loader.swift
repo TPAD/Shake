@@ -17,9 +17,8 @@ import Foundation
 //MARK: - LVDELEGATE
 protocol LocationViewDelegate: class {
     func initializeLongPress(_ view: Location, sender: UIGestureRecognizer?)
-    func handleSwipeRight(_ view: Location, sender: UISwipeGestureRecognizer)
-    func handleSwipeLeft(_ view: Location, sender: UISwipeGestureRecognizer)
     func updateView(_ view: Location)
+    func haltLocationUpdates()
 }
 
 class Location: UIView {
@@ -39,10 +38,11 @@ class Location: UIView {
             name.adjustsFontSizeToFitWidth = true
             setPriceLvl()
             openRn()
-            setRating()
             getPhoto()
             coordinates = getCoords()
             phoneNumber = getPhoneNum()
+            setRating()
+            address = getAddress()
         }
     }
     
@@ -50,10 +50,10 @@ class Location: UIView {
     
     var coordinates: (Double?, Double?)?
     var phoneNumber: String?
+    var address: String?
     /*lazy var reviews: NSArray?  = { return self.getReviews() }()
     lazy var weeklyHours: NSDictionary? = { return self.getHours() }()
     lazy var reference: String? = { return self.getRef() }()
-    lazy var address: String? = { return self.getAddress() }()
     var more_pics: NSArray? = nil
     lazy var types: NSArray? = { return self.getTypes() }()*/
     
@@ -84,10 +84,7 @@ class Location: UIView {
                 }
             // draw dualView in the pressed state
             case .pressed:
-                dualView = DualView(frame: self.bounds)
-                dualView!.tag = 10
-                dualView!.alpha = 0
-                dualView!.delegate = self
+                addPreviewToSubview()
                 view.addSubview(dualView!)
                 UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseIn,
                                animations: { self.dualView!.alpha = 1 }, completion: { _ in })
@@ -102,15 +99,7 @@ class Location: UIView {
             UILongPressGestureRecognizer(
                 target: self, action: #selector(self.longTap(_:)))
         longPress.allowableMovement = self.bounds.width/8
-        let leftSwipe = UISwipeGestureRecognizer(
-            target: self, action: #selector(Location.swipeHandler(_:)))
-        leftSwipe.direction = .left
-        let rightSwipe = UISwipeGestureRecognizer(
-            target: self, action: #selector(Location.swipeHandler(_:)))
-        rightSwipe.direction = .right
         addGestureRecognizer(longPress)
-        addGestureRecognizer(rightSwipe)
-        addGestureRecognizer(leftSwipe)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -178,7 +167,6 @@ class Location: UIView {
     
     private func getPhoneNum() -> String? {
         if let data = rawData!["formatted_phone_number"] as? String {
-            print(data)
             return data
         }
         return nil
@@ -194,8 +182,10 @@ class Location: UIView {
     }
     
     private func setRating() {
+        view.viewWithTag(7)?.removeFromSuperview()
         let starview: CosmosView = CosmosView(frame: ratingView.frame)
         starview.starSize = 15
+        starview.tag = 7
         starview.frame.size.width = starview.intrinsicContentSize.width
         starview.center.x = view.center.x
         starview.frame.origin.y = (0.05)*view.frame.height
@@ -210,6 +200,18 @@ class Location: UIView {
         } else {
             starview.rating = 0
         }
+    }
+    
+    private func getAddress() -> String? {
+        if var data = rawData!["vicinity"] as? String {
+            var temp: String = ""
+            for char in data.characters {
+                if (char == ",") { break }
+                temp.append(char)
+            }
+            return temp
+        }
+        return nil
     }
     
     /*private func getReviews() -> NSArray? {
@@ -231,17 +233,6 @@ class Location: UIView {
         return nil
     }
     
-    private func getAddress() -> String? {
-        if let data = rawData!["vicinity"] as? String {
-            /*if let range = data.range(of: ", Pittsburgh", options: .backwards) {
-                data.removeSubrange(range)
-                return data
-            }*/
-            return data
-        }
-        return nil
-    }
-    
     private func getTypes() -> NSArray? {
         if let data = rawData!["types"] as? NSArray {
             return data
@@ -254,9 +245,9 @@ class Location: UIView {
         state = (state == .default) ? .pressed:.default
     }
     
-    func undoSwipe(onView view: DualView, sender: UISwipeGestureRecognizer) {
+    /*func undoSwipe(onView view: DualView, sender: UISwipeGestureRecognizer) {
         view.delegate?.undoSwipeAction(onView: view, sender: sender)
-    }
+    }*/
     
     func addPreviewToSubview() {
         
@@ -286,14 +277,9 @@ class Location: UIView {
         delegate?.initializeLongPress(self, sender: sender)
     }
     
-    func swipeHandler(_ sender: UISwipeGestureRecognizer) {
-        if sender.direction == .left {
-            delegate?.handleSwipeLeft(self, sender: sender)
-        } else if sender.direction == .right {
-            delegate?.handleSwipeRight(self, sender: sender)
-        }
+    func stopLocationUpdates() {
+        delegate?.haltLocationUpdates()
     }
-    
 }
 
 extension Location {
@@ -322,32 +308,6 @@ extension Location {
         }
     }
 }
-
-//MARK: - DVDelegate
-extension Location: DualViewDelegate {
-    
-    func undoSwipeAction(onView view: DualView, sender: UISwipeGestureRecognizer) {
-        if sender.direction == .left {
-            if let dualView = self.dualView {
-                dualView.lhs!.backgroundColor = DualView.BGColor
-                dualView.lhs_icon!.image = UIImage(named: "MarkerFilled-100")
-            }
-        } else if sender.direction == .right {
-            if let dualView = self.dualView {
-                dualView.rhs!.backgroundColor = DualView.BGColor
-                dualView.rhs_icon!.image = UIImage(named: "PhoneFilled-100")
-            }
-        }
-        if let preview: UIView = self.viewWithTag(9) {
-            UIView.animate(withDuration: 0.35, animations: {
-                preview.center.x = self.bounds.width/2
-                preview.center.y = self.bounds.height/2
-            })
-        }
-    }
-}
-
-
 
 
 

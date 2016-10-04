@@ -15,34 +15,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
     var window: UIWindow?
     var locationManager: CLLocationManager!
-    var address: String?
     var status = CLLocationManager.authorizationStatus()
     var userCoord: CLLocationCoordinate2D?
-    var destination: CLLocationCoordinate2D?
+    var dest: CLLocationCoordinate2D?
     var angle: Double?
     
     var distFromDest: Double?
     
     func getApiKey() -> String {
         return "AIzaSyCBckYCeXQ6j_voOmOq7UHuWqWjHUYEz7E"
-    }
-    
-    func reverseGeocodeCoordinate(_ coordinate: CLLocationCoordinate2D) {
-        
-        let geocoder = GMSGeocoder()
-        
-        geocoder.reverseGeocodeCoordinate(coordinate, completionHandler: {
-            response, error in
-            if error == nil {
-                if let address = response?.firstResult() {
-                    let lines = address.lines! as [String]
-                    self.address = lines.joined(separator: "\n")
-                    //self.locationManager.stopUpdatingLocation()
-                }
-            } else {
-                print("Address error: \(error)")
-            }
-        })
     }
     
     func locationGetterSetup() {
@@ -53,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.distanceFilter = 20.0
-            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
             locationManager.startUpdatingLocation()
         }
     }
@@ -68,53 +49,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
-            let value: CLLocationCoordinate2D = (location.coordinate)
             self.userCoord = location.coordinate
-            reverseGeocodeCoordinate(value)
-            // from deprecated function
-            let here: CLLocationCoordinate2D = location.coordinate
-            if let destination = destination {
-                calculateUserAngle(here, destination: destination)
-            }
         }
     }
     
+    // TODO: - handle this error
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Location Manager error: \(error)")
     }
-
-    func topMostViewController() -> UIViewController? {
-        let topController: UIViewController? =
-            UIApplication.shared.keyWindow?.rootViewController
-        if let top = topController {
-            let presentedController: UIViewController? = top.presentedViewController
-            if let top_most = presentedController {
-                return top_most
-            }
-        }
-        return nil
-        
-    }
     
-    func calculateUserAngle(_ current: CLLocationCoordinate2D,
-                            destination: CLLocationCoordinate2D) {
-        var x: Double = 0
-        var y: Double = 0
-        var deg: Double = 0
-        var delLon: Double = 0
-        
-        delLon = destination.longitude - current.longitude
-        y = sin(delLon) * cos(destination.latitude)
-        x = cos(current.latitude) * sin(destination.latitude) -
-            sin(current.latitude) * cos(destination.latitude)*cos(delLon)
-        deg = atan2(y, x).radiansToDegrees as! Double
-        
-        if (deg < 0) {
-            deg = -deg
-        } else {
-            deg = 360 - deg
-        }
-        angle = deg
+    func locationManager(_ manager: CLLocationManager,
+                         didUpdateHeading newHeading: CLHeading) {
+        let here: CLLocationCoordinate2D = manager.location!.coordinate
+        if let destination = dest {
+            angle = here.angleTo(destination: destination)
+            // heading information is necessary to calculate rotation angle of compass
+            var h = newHeading.magneticHeading
+            let h2 = newHeading.trueHeading // will be -1 if we have no location info
+            if h2 >= 0 { h = h2 }
+            
+            // DestinationViewController is the one that requests heading updates
+            if let destinationVC: DestinationViewController =
+                Helper.topMostViewController() as? DestinationViewController {
+                if let deg = angle {
+                    // match compass rotation to the angle calculated angle
+                    destinationVC.compass!.transform =
+                        CGAffineTransform(rotationAngle: CGFloat((deg - h) * M_PI/180))
+                    let dest: CLLocation = CLLocation(latitude: destination.latitude,
+                    longitude: destination.longitude)
+                    // update distance between user and location navigated to
+                    destinationVC.updateDistance(manager, destination: dest)
+                }
+            }
+         }
     }
     
     //MARK: - Application functions
@@ -122,7 +89,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // Override point for customization after application launch.
         GMSServices.provideAPIKey(getApiKey())
         locationGetterSetup()
-        
         return true
     }
     
@@ -139,12 +105,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        print("did Enter Background")
+        locationManager.stopUpdatingHeading()
+        locationManager.stopUpdatingLocation()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
         print("will Enter Foreground")
+        if let destinationVC: DestinationViewController =
+            Helper.topMostViewController() as? DestinationViewController {
+            destinationVC.locationManagerSetup()
+        }
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {

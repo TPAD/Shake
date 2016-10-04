@@ -42,7 +42,6 @@ public struct Search {
                 encoding: URLEncoding.default)
                 .responseJSON {
                 (response) -> Void in
-                print(response)
                 guard response.result.isSuccess else {
                     print("Error Fetching Details: \(response.result.error)")
                     parser(nil)
@@ -85,7 +84,8 @@ public struct Search {
     
     static func detailQuery(
         byPlaceID id: String,
-        returnData: @escaping (NSDictionary?) -> Void) {
+        atIndex: Int,
+        returnData: @escaping (NSDictionary?, Int?) -> Void) {
         
         if let apiKey = appDelegate?.getApiKey() {
             let params: Parameters =
@@ -99,14 +99,14 @@ public struct Search {
                     (response) -> Void in
                     guard response.result.isSuccess else {
                         print("Error Fetching Details: \(response.result.error)")
-                        returnData(nil)
+                        returnData(nil, nil)
                         return
                     }
                     guard let value = response.result.value as? NSDictionary else {
                         print("Bad Data")
                         return
                     }
-                    returnData(value)
+                    returnData(value, atIndex)
             }
         }
     }
