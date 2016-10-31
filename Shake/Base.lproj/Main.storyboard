@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1108" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
@@ -7,6 +7,11 @@
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="SanFranciscoDisplay-Regular.otf">
+            <string>SanFranciscoDisplay-Regular</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -20,21 +25,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Shake to find the nearest" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rIY-e1-kr6">
-                                <fontDescription key="fontDescription" name="PingFangHK-Thin" family="PingFang HK" pointSize="30"/>
-                                <color key="textColor" red="0.96078431369999995" green="0.94117647059999998" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gasStation" translatesAutoresizingMaskIntoConstraints="NO" id="8vK-np-5Gg">
-                                <constraints>
-                                    <constraint firstAttribute="width" secondItem="8vK-np-5Gg" secondAttribute="height" id="Dw4-SB-Gb9"/>
-                                </constraints>
-                            </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="..." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SnR-zU-YN1">
-                                <fontDescription key="fontDescription" name="PingFangHK-Thin" family="PingFang HK" pointSize="30"/>
-                                <color key="textColor" red="0.96078431369999995" green="0.94117647059999998" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4LZ-QM-Oip">
                                 <state key="normal" title="Button">
                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -43,32 +33,45 @@
                                     <action selector="testSegue:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xwt-g1-pz2"/>
                                 </connections>
                             </button>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="shakex" translatesAutoresizingMaskIntoConstraints="NO" id="UIb-HE-ZlQ">
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="UIb-HE-ZlQ" secondAttribute="height" id="xoX-Vi-YWG"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Shake to find the nearest" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C8e-GE-rLd">
+                                <fontDescription key="fontDescription" name="SanFranciscoDisplay-Regular" family="San Francisco Display" pointSize="28"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="convenience store" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6no-8H-clu">
+                                <fontDescription key="fontDescription" name="SanFranciscoDisplay-Regular" family="San Francisco Display" pointSize="26"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
-                        <color key="backgroundColor" red="0.76078431369999999" green="0.27450980390000002" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.27450980392156865" green="0.54509803921568623" blue="0.94117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="SnR-zU-YN1" firstAttribute="width" secondItem="rIY-e1-kr6" secondAttribute="width" id="4eg-L0-kWc"/>
-                            <constraint firstItem="SnR-zU-YN1" firstAttribute="height" secondItem="rIY-e1-kr6" secondAttribute="height" id="6DK-LB-BQd"/>
-                            <constraint firstItem="8vK-np-5Gg" firstAttribute="top" secondItem="SnR-zU-YN1" secondAttribute="bottom" constant="23" id="AyH-0R-xDm"/>
-                            <constraint firstItem="SnR-zU-YN1" firstAttribute="top" secondItem="rIY-e1-kr6" secondAttribute="bottom" id="F5a-Ad-DrN"/>
+                            <constraint firstItem="6no-8H-clu" firstAttribute="top" secondItem="C8e-GE-rLd" secondAttribute="bottom" id="DEr-tP-aXL"/>
                             <constraint firstItem="4LZ-QM-Oip" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="G4P-Fd-zhY"/>
-                            <constraint firstItem="rIY-e1-kr6" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="J8H-uI-3qh"/>
-                            <constraint firstItem="8vK-np-5Gg" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="bYc-3T-XDj"/>
-                            <constraint firstItem="8vK-np-5Gg" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.3" id="cdI-26-k7Z"/>
-                            <constraint firstItem="SnR-zU-YN1" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="fPe-xq-rAO"/>
-                            <constraint firstItem="rIY-e1-kr6" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.6" id="mBa-IY-imG"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="4LZ-QM-Oip" secondAttribute="bottom" constant="100" id="pvV-J8-L7w"/>
-                            <constraint firstItem="rIY-e1-kr6" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="100" id="t0V-k2-1i7"/>
+                            <constraint firstItem="6no-8H-clu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="INq-dZ-qBv"/>
+                            <constraint firstItem="C8e-GE-rLd" firstAttribute="top" secondItem="UIb-HE-ZlQ" secondAttribute="bottom" id="IbB-30-TwQ"/>
+                            <constraint firstItem="C8e-GE-rLd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="VUN-8y-9Zc"/>
+                            <constraint firstItem="C8e-GE-rLd" firstAttribute="width" secondItem="UIb-HE-ZlQ" secondAttribute="width" multiplier="0.85" id="XzI-2d-8rN"/>
+                            <constraint firstItem="6no-8H-clu" firstAttribute="width" secondItem="C8e-GE-rLd" secondAttribute="width" multiplier="1.4" id="a3p-Y5-o2B"/>
+                            <constraint firstItem="UIb-HE-ZlQ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="g8C-sX-YUG"/>
+                            <constraint firstItem="UIb-HE-ZlQ" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.65" id="jiV-s5-ikq"/>
+                            <constraint firstItem="UIb-HE-ZlQ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="50" id="oKv-bW-9lO"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="4LZ-QM-Oip" secondAttribute="bottom" constant="20" id="pvV-J8-L7w"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="location" destination="8vK-np-5Gg" id="48w-Za-liE"/>
-                        <outlet property="locationName" destination="SnR-zU-YN1" id="pTk-m7-MvT"/>
+                        <outlet property="desiredLocation" destination="6no-8H-clu" id="cr8-ma-UVG"/>
                         <segue destination="iif-ih-lHL" kind="presentation" identifier="toDetail" modalTransitionStyle="crossDissolve" id="eI6-ZF-LS4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="166" y="277"/>
+            <point key="canvasLocation" x="165.59999999999999" y="276.61169415292358"/>
         </scene>
         <!--Destination View Controller-->
         <scene sceneID="00Q-b2-ilI">
@@ -84,26 +87,26 @@
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u2j-G2-4Gf">
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="XPn-YV-m9v"/>
-                                    <constraint firstAttribute="height" constant="50" id="thJ-s0-46G"/>
+                                    <constraint firstAttribute="width" secondItem="u2j-G2-4Gf" secondAttribute="height" multiplier="1:1" id="0F1-Cl-j8A"/>
                                 </constraints>
-                                <state key="normal" image="Add"/>
+                                <state key="normal" backgroundImage="Add"/>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.76078431372549016" green="0.27450980392156865" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="u2j-G2-4Gf" firstAttribute="width" secondItem="Z3h-VN-rbC" secondAttribute="width" multiplier="0.225" id="AIx-e9-axU"/>
                             <constraint firstItem="u2j-G2-4Gf" firstAttribute="centerX" secondItem="Z3h-VN-rbC" secondAttribute="centerX" id="tZh-WK-ajd"/>
-                            <constraint firstItem="utl-pZ-bhp" firstAttribute="top" secondItem="u2j-G2-4Gf" secondAttribute="bottom" constant="50" id="uuv-bH-33L"/>
+                            <constraint firstItem="utl-pZ-bhp" firstAttribute="top" secondItem="u2j-G2-4Gf" secondAttribute="bottom" constant="-20" id="uuv-bH-33L"/>
                         </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bM5-Yd-BAd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="873.5" y="388.5"/>
+            <point key="canvasLocation" x="922" y="277"/>
         </scene>
     </scenes>
     <resources>
         <image name="Add" width="50" height="50"/>
-        <image name="gasStation" width="100" height="100"/>
+        <image name="shakex" width="225" height="225"/>
     </resources>
 </document>

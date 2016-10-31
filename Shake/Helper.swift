@@ -6,30 +6,188 @@
 //  Copyright © 2016 Tony Padilla. All rights reserved.
 //
 
+/*
+ *  Helper file containing various class extensions and helper structs
+ *
+ */
+public let weekdays: [String] = ["Monday:", "Tuesday:", "Wednesday:",
+                       "Thursday:", "Friday:", "Saturday:", "Sunday:"]
+
+// global appDelegate reference is a little suspect
+weak var appDelegate: AppDelegate? =
+    UIApplication.shared.delegate as? AppDelegate
+
+/*
+ *  MARK: - struct LocationTypes
+ *  Used by TypePicker object
+ *
+ */
+public struct LocationTypes {
+    static var fun: [String] {
+        return ["movie_theater", "night_club", "bar",
+                "liquor_store", "museum", "park"]
+    }
+    
+    static var miscellaneous: [String] {
+        return ["church", "hair_care", "library", "bus_station",
+                "clothing_store", "department_store"]
+    }
+    
+    static var need: [String] {
+        return ["hospital", "pharmacy", "doctor", "dentist",
+                "car_repair", "gas_station"]
+    }
+    
+    static var other: [String] {
+        return ["bank", "atm", "cafe", "restaurant",
+                "convenience_store", "post_office"]
+    }
+}
+
+/*
+ *  MARK: - struct Colors
+ *  contains the colors used throughout the project
+ *
+ */
+public struct Colors {
+    
+    // green for open location (used with white background bar in Location)
+    static var mediumSeaweed: UIColor {
+        return UIColor(red:60/255.0, green:179/255.0,
+                       blue:113/255.0, alpha: 0.8)
+    }
+    
+    static var seaweed: UIColor {
+        return UIColor(red:60/255.0, green:179/255.0,
+                       blue:113/255.0, alpha: 1.0)
+    }
+    
+    // red for closed location (used with white background bar in Location)
+    static var mediumFirebrick: UIColor {
+        return UIColor(red:205/255.0, green:35/255.0,
+                       blue:35/255.0, alpha:0.8)
+    }
+    
+    // Jack's blue
+    static var new: UIColor {
+        return UIColor(red:0/255.0, green:96/255.0,
+                       blue:192/255.0, alpha:1)
+    }
+    
+    // Tony's blue
+    static var blue: UIColor {
+        return UIColor(red: 78/255.0, green:147/255.0,
+                       blue:222/255.0, alpha: 1.0)
+    }
+    
+    //used for phone button in DualView
+    static var green: UIColor {
+        return   UIColor(red:70/255.0, green:179/255.0,
+                         blue:173/255.0, alpha: 1.0)
+    }
+    
+    // Google blue (background color for ViewController)
+    static var gBlue: UIColor {
+        return   UIColor(red:72/255.0, green:139/255.0,
+                         blue:240/255.0, alpha: 1.0)
+    }
+    
+    // background color for DestinationViewController
+    static var bgRed: UIColor {
+        return UIColor(red: 194/255.0, green: 70/255.0,
+                       blue: 68/255.0, alpha: 1.0)
+    }
+}
+
+// enum used to determine redirection from DestinationViewController
+public enum Redirect { case Call, Map, Web }
+
+/*
+ *  MARK: - struct AlertActions
+ *  contains the UIAlertActions used throughout the project
+ *
+ */
+public struct AlertActions {
+    
+    // declaration for an object user can use to dismiss a UIAlertController
+    static var cancel: UIAlertAction = {
+        return UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+    }()
+    
+    /*  declaration for an object user can use to navigate to their settings
+     *  from a UIAlertController
+     */
+    static var goToSettings: UIAlertAction = {
+        let settingsAction =
+            UIAlertAction(title: "OK", style: .default,
+                          handler: openSettingsIfPossible)
+        return settingsAction
+    }()
+    
+    /*  returns an object the user can use to navigate out of app to
+     *  call a location, for a map to a location (Google Maps),
+     *  or to Safari browser to the location's website
+     */
+    static func goTo(which: Redirect, with: String) -> UIAlertAction {
+        let action = UIAlertAction(title: "Ok", style: .default, handler: {
+            _ -> Void in
+            switch which {
+            case .Call:
+                Helper.dial(number: with)
+                break
+            case .Map:
+                Helper.redirectToGoogleMaps(destination: with)
+                break
+            case .Web:
+                Helper.redirectToSafari(website: with)
+                break
+            }
+        })
+        return action
+    }
+    
+    // allows the user to navigate to their settings
+    private static func openSettingsIfPossible(action: (UIAlertAction)?) {
+        let settingsUrl = URL(string: UIApplicationOpenSettingsURLString)
+        if let url = settingsUrl {
+            // not sure why this is necessary (crashed otherwise)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime(
+                uptimeNanoseconds: UInt64(0.5)), execute: {
+                    if #available(iOS 10.0, *) {
+                        UIApplication.shared.open(url, completionHandler: nil)
+                    } else {
+                        //MARK: - TODO Fallback on earlier versions
+                    }
+            })
+        }
+    }
+    
+}
+
 public struct Helper {
     
-    static var GlobalMainQueue: DispatchQueue {
-        return DispatchQueue.main
+    static func initAlertContoller(title: String, message: String,
+                                   host: UIViewController,
+                                   actions: [UIAlertAction],
+                                   style: UIAlertControllerStyle,
+                                   completion: (() -> Void)?) {
+        let alertController = UIAlertController(title: title,
+                                                message: message,
+                                                preferredStyle: style)
+        for action in actions {
+            alertController.addAction(action)
+        }
+        host.present(alertController, animated: true, completion: completion)
     }
     
     // requests the user for permission to use their location
     static func requestPermission(_ host: UIViewController) {
         let title: String = "Shake requires user's location to operate."
         let message: String = "Please authorize the use of your location."
-        let alertController = UIAlertController(title: title,
-                                                message: message, preferredStyle: .alert)
-        let settingsAction = UIAlertAction(title: "OK", style: .default) {
-            _ -> Void in
-            let settingsUrl = URL(string: UIApplicationOpenSettingsURLString)
-            if let url = settingsUrl {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(0.5)), execute: {
-                    UIApplication.shared.open(url, completionHandler: nil)
-                })
-            }
-        }
-        alertController.addAction(settingsAction)
-        
-        host.present(alertController, animated: true, completion: nil);
+        let actions: [UIAlertAction] = [AlertActions.goToSettings]
+        initAlertContoller(title: title, message: message, host: host,
+                           actions: actions, style: .actionSheet,
+                           completion: nil)
     }
     
     // notifies the user that they must relaunch the app to continue
@@ -53,7 +211,7 @@ public struct Helper {
             let label: UILabel = UILabel().then {
                 $0.textColor = UIColor.white
                 $0.text = "No Internet connection detected"
-                $0.font = UIFont(name: "Avenir", size: 16.0)
+                $0.font = UIFont(name: "SanFranciscoText-Light", size: 16.0)
                 $0.sizeToFit()
                 $0.center.x = view.center.x
                 $0.center.y = view.center.y
@@ -75,30 +233,69 @@ public struct Helper {
         return nil
     }
     
-    struct Colors {
-        static var mediumSeaweed: UIColor {
-            return UIColor(red:60/255.0, green:179/255.0,
-                           blue:113/255.0, alpha: 0.8)
+    // Returns the day of the week (range: 1-7)
+    static func dayOfWeek() -> Int {
+        let date = NSDate()
+        let calendar: NSCalendar =
+            NSCalendar.current as NSCalendar
+        let components: NSDateComponents =
+            calendar.components(.weekday, from: date as Date)
+                as NSDateComponents
+        return components.weekday
+    }
+    
+    /* navigate out of app to google maps */
+    static func redirectToGoogleMaps(destination: String) {
+        if appDelegate?.locationManager?.location == nil { return }
+        let location = appDelegate!.locationManager!.location
+        let coord = location?.coordinate
+        if coord == nil { return }
+        GMSGeocoder().reverseGeocodeCoordinate(coord!) {
+            (response, error) in
+            if error == nil {
+                let gmaps = URL(string: "comgooglemaps://")
+                if response?.firstResult() == nil { return }
+                let address = response!.firstResult()
+                let lines = address!.lines! as [String]
+                var start = lines.joined(separator: ", ")
+                start = start.replacingOccurrences(of: " ", with: "+")
+                let daddr = destination.replacingOccurrences(of: " ", with: "+")
+                let format = "comgooglemaps://??saddr=\(start)" +
+                             "&daddr=\(daddr)&directionsmode=travel"
+                let url = URL(string: format)
+                if (UIApplication.shared.canOpenURL(gmaps!)) {
+                    if url == nil { return }
+                    if #available(iOS 10.0, *) {
+                        UIApplication.shared.open(url!)
+                    } else {
+                        // Fallback on earlier versions
+                    }
+                } else {
+                    //TODO: - handle this error
+                    print("Can't use comgooglemaps://");
+                }
+            }
         }
-        
-        static var mediumFirebrick: UIColor {
-            return UIColor(red:205/255.0, green:35/255.0,
-                           blue:35/255.0, alpha:0.8)
+    }
+    
+    static func dial(number: String) {
+        if let url = URL(string: "tel://\(number.formattedForCall())") {
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(url, completionHandler: nil)
+            } else {
+                // fallback on earlier version
+            }
+        } else {
+            //MARK: - TODO raise error
         }
-        
-        static var new: UIColor {
-            return UIColor(red:0/255.0, green:96/255.0,
-                           blue:192/255.0, alpha:1)
-        }
-        
-        static var blue: UIColor {
-            return UIColor(red: 78/255.0, green:147/255.0,
-                           blue:222/255.0, alpha: 1.0)
-        }
-        
-        static var green: UIColor {
-            return   UIColor(red:70/255.0, green:179/255.0,
-                             blue:173/255.0, alpha: 1.0)
+    }
+    
+    static func redirectToSafari(website: String) {
+        if let url = URL(string: website) {
+            UIApplication.shared.open(url, options: ["":""],
+                                      completionHandler: nil)
+        } else {
+            //MARK: - TODO raise error
         }
     }
 }
@@ -117,11 +314,11 @@ public extension UIView {
         self.layer.add(animation, forKey: nil)
     }
     
-    func roundView() {
+    func roundView(borderWidth: CGFloat) {
         let white: UIColor =
             UIColor(red:255/255.0, green:255/255.0, blue:255/255.0, alpha:0.7)
         layer.cornerRadius = self.frame.height/2
-        layer.borderWidth = 6
+        layer.borderWidth = borderWidth
         layer.masksToBounds = false
         layer.borderColor = white.cgColor
         clipsToBounds = true
@@ -167,6 +364,26 @@ public extension UIView {
         animation.duration = duration
         self.layer.add(animation, forKey: kCATransitionPush)
     }
+    
+    /* get y at the base of a view frame with an offset */
+    func by(withOffset: CGFloat) -> CGFloat {
+        let originy = self.frame.origin.y
+        let height = self.frame.height
+        return originy + height + withOffset
+    }
+    
+    /* get x at the base of a view frame with an offset */
+    func bx(withOffset: CGFloat) -> CGFloat {
+        let originx = self.frame.origin.x
+        let width = self.frame.width
+        return originx + width + withOffset
+    }
+    
+    /* check if a view is beneath another */
+    func frameIsBelow(view: UIView) -> Bool {
+        return self.frame.origin.y >= view.by(withOffset: 0) &&
+            view != self
+    }
 }
 
 public extension CLLocation {
@@ -207,7 +424,7 @@ public extension String {
     }
     
     // appropriate formatting for a phone number
-    func numberFormattedForCall() -> String {
+    func formattedForCall() -> String {
         let charactersToReplace: [String] = ["(", ")", " ", "-"]
         var filteredNum: String = self
         for character in charactersToReplace {
@@ -216,7 +433,20 @@ public extension String {
         }
         return filteredNum
     }
+    
+    func capitalizingFirstLetter() -> String {
+        let first = String(characters.prefix(1)).capitalized
+        let other = String(characters.dropFirst())
+        return first + other
+    }
+    
+    mutating func capitalizeFirstLetter() {
+        self = self.capitalizingFirstLetter()
+    }
+    
 }
+
+
 
 // adjusts height
 public extension UILabel {
@@ -269,3 +499,15 @@ extension DoubleConvertible {
 //MARK: - offline view
 //makes the view easier to identify and consequently easier to remove
 class OfflineView: UIView { }
+
+extension ReviewsContainerView {
+    func sumOfSubviewHeights() -> CGFloat {
+        var result: CGFloat = 0.0
+        for view in self.subviews {
+            if view.isKind(of: ReviewView.self) {
+                result += view.frame.height
+            }
+        }
+        return result
+    }
+}

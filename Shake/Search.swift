@@ -6,12 +6,13 @@
 //  Copyright © 2016 Tony Padilla. All rights reserved.
 //
 
-import Foundation
-import CoreLocation
-import GoogleMaps
 import Alamofire
 
-// MARK: - SEARCH
+/*
+ *  Struct containing functions used to request data from
+ *  Google Places API Web Service
+ *
+ */
 public struct Search {
     
     // MARK: - Google API URI
@@ -27,9 +28,9 @@ public struct Search {
     private static let PHOTOURL: URLConvertible =
     "https://maps.googleapis.com/maps/api/place/photo?"
     
-    weak fileprivate static var appDelegate: AppDelegate? =
-        UIApplication.shared.delegate as? AppDelegate
-    
+    /*
+     *  Wrapper for api request (Google Place Nearby Search Api)
+     */
     private static func GSearchRequest(
         _ url: URLConvertible,
         method: HTTPMethod = .get,
@@ -56,6 +57,10 @@ public struct Search {
     }
     
     // MARK: - Search methods
+    
+    /*
+     *  Wrapper for api request (Google Place Nearby Search Api)
+     */
     static func GSearh(_ query: String, location: CLLocation?,
                        parser: @escaping ([NSDictionary]?)->Void,
                        host: UIViewController?) {
@@ -82,10 +87,13 @@ public struct Search {
         }
     }
     
+    
+    /*
+     *  Wrapper for api request (Google Place Detail Api)
+     */
     static func detailQuery(
         byPlaceID id: String,
-        atIndex: Int,
-        returnData: @escaping (NSDictionary?, Int?) -> Void) {
+        returnData: @escaping (NSDictionary?) -> Void) {
         
         if let apiKey = appDelegate?.getApiKey() {
             let params: Parameters =
@@ -99,18 +107,22 @@ public struct Search {
                     (response) -> Void in
                     guard response.result.isSuccess else {
                         print("Error Fetching Details: \(response.result.error)")
-                        returnData(nil, nil)
+                        returnData(nil)
                         return
                     }
                     guard let value = response.result.value as? NSDictionary else {
                         print("Bad Data")
                         return
                     }
-                    returnData(value, atIndex)
+                    returnData(value)
             }
         }
     }
     
+    /* 
+     *  wrapper for api request from google places api, retrieves image for location
+     *  using location reference
+     */
     static func retrieveImageByReference(ref: String,
                                          target: UIImageView,
                                          maxWidth: Int) {
@@ -136,6 +148,28 @@ public struct Search {
                     target.image = response.result.value
                 }
             }
+        }
+    }
+    
+    /*
+     *   retrieves image using image url from web
+     */
+    static func requestImageFromURL(url: String, target: UIImageView) {
+        let URL: URLConvertible = url as URLConvertible
+        Alamofire.request(
+            URL,
+            method: .get,
+            parameters: nil,
+            encoding: URLEncoding.default)
+            .responseImage {
+                (response) -> Void in
+                guard response.result.isSuccess else {
+                    target.image = UIImage(named: "user")
+                    return
+                }
+                DispatchQueue.main.async {
+                    target.image = response.result.value
+                }
         }
     }
 }

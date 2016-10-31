@@ -9,6 +9,10 @@
 import Foundation
 import SystemConfiguration
 
+
+/*
+ *  Helper struct used to determine network connectivity
+ */
 public struct Reachability {
     
     static func isConnected() -> Bool {

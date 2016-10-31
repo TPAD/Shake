@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import GoogleMaps
+import CoreLocation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
@@ -26,6 +27,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         return "AIzaSyCBckYCeXQ6j_voOmOq7UHuWqWjHUYEz7E"
     }
     
+    /* 
+     *  Initializes location manager given the correct permissions
+     *  Requests authorization if needed
+     *
+     */
     func locationGetterSetup() {
         if status != .restricted && status != .denied {
             self.locationManager = CLLocationManager()
@@ -58,8 +64,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         print("Location Manager error: \(error)")
     }
     
+    /*
+     *  This method allows the user to use the compass surrounding
+     *  the Location object in ViewController
+     *
+     */
     func locationManager(_ manager: CLLocationManager,
                          didUpdateHeading newHeading: CLHeading) {
+        //print("suh dood")
         let here: CLLocationCoordinate2D = manager.location!.coordinate
         if let destination = dest {
             angle = here.angleTo(destination: destination)
@@ -73,8 +85,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 Helper.topMostViewController() as? DestinationViewController {
                 if let deg = angle {
                     // match compass rotation to the angle calculated angle
-                    destinationVC.compass!.transform =
-                        CGAffineTransform(rotationAngle: CGFloat((deg - h) * M_PI/180))
+                    UIView.animate(withDuration: 0.4, animations: {
+                        destinationVC.compass!.transform =
+                            CGAffineTransform(rotationAngle: CGFloat((deg - h) * M_PI/180))
+                    })
                     let dest: CLLocation = CLLocation(latitude: destination.latitude,
                     longitude: destination.longitude)
                     // update distance between user and location navigated to

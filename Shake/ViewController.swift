@@ -6,37 +6,35 @@
 //  Copyright © 2016 Tony Padilla. All rights reserved.
 //
 
-import UIKit
-import CoreLocation
-
-class ViewController: UIViewController {
+/*
+ *  ViewController corresponds to the initial view controller
+ *  User can select a nearby location they would like to query
+ *  After a response is retrieved from a call to Google Places API Web Service
+ *
+ */
+class ViewController: UIViewController, TypePickerDelegate {
     
-    @IBOutlet weak var locationName: UILabel!
-    @IBOutlet weak var location: UIImageView!
     
-    weak fileprivate var appDelegate: AppDelegate? =
-        UIApplication.shared.delegate as? AppDelegate
+    @IBOutlet weak var desiredLocation: UILabel!
+    var typePicker: TypePicker?
     var results: Array<NSDictionary>?
     var resultDetail: Array<NSDictionary>?
-    var locationNames: [String?]?
+    var locationNames: [String?]?               /* investigate this (may not need)*/
     var readyToSegue: Bool = false
     var userCoord: CLLocationCoordinate2D?
+    var qstring: String? 
     
     // MARK: - Override Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        locationName.text = "Convenience Store"
-        NotificationCenter.default.addObserver(self, selector:
-        #selector(UIApplicationDelegate.applicationWillEnterForeground(_:)),
-        name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
-        NotificationCenter.default.addObserver(self, selector:
-        #selector(ViewController.applicationWillEnterBackground(_:)),
-        name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
+        let tap = UITapGestureRecognizer(target: self,
+                                         action: #selector(toggleTypes(_:)))
+        tap.numberOfTapsRequired = 1
+        desiredLocation.addGestureRecognizer(tap)
+        desiredLocation.isUserInteractionEnabled = true
+
         
-        setBackgroundImage()
-        
-        if let appDelegate = self.appDelegate {
+        if let appDelegate = appDelegate {
             let status = appDelegate.status as CLAuthorizationStatus
             if status == .restricted || status == .denied {
                 Helper.requestPermission(self)
@@ -44,6 +42,7 @@ class ViewController: UIViewController {
         }
     }
     
+    // Method overriden to display an animation before the view has loaded
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if !Reachability.isConnected() {
@@ -52,22 +51,21 @@ class ViewController: UIViewController {
         initialLoadView()
     }
     
+    // detects shake motion in real time
     override func motionBegan(_ motion: UIEventSubtype, with event: UIEvent?) {
         super.motionBegan(motion, with: event)
+        // make sure shake is only detected when the view is loaded
         if (self.isViewLoaded == true && self.view.window != nil) {
             if let motion = event {
+                // make sure data necessary is retrieved before segue
                 if motion.subtype == .motionShake && readyToSegue {
-                    UIView.animate(withDuration: 0.4, delay: 0.0, options:
-                        .curveEaseOut, animations: {
-                            self.locationName.alpha = 0
-                        }, completion: { _ in
-                            self.goToDetail(self)
-                    })
+                    self.goToDetail(self)
                 }
             }
         }
     }
     
+    /* sends necessary data to destination controller  */
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destination = segue.destination as? DestinationViewController {
             if let data = results {
@@ -79,24 +77,45 @@ class ViewController: UIViewController {
         }
     }
 
+    /* segue with button for testing purposes */
     func goToDetail(_ sender: AnyObject) {
-        self.performSegue(withIdentifier: "toDetail", sender: sender)
+        if readyToSegue {
+            self.performSegue(withIdentifier: "toDetail", sender: sender)
+        }
     }
     
-    func setBackgroundImage() {
-        let view: UIImageView = UIImageView(frame: self.view.frame)
-        view.image = UIImage(named: "gas_station")
-    
-        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.extraLight)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        //fill the view
-        blurEffectView.frame = self.view.frame
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(blurEffectView)
-        
-        self.view.insertSubview(view, at: 0)
+    /* Allows the user to select the type of place they would like to query */
+    func toggleTypes(_ sender: UITapGestureRecognizer) {
+        if typePicker == nil {
+            let height: CGFloat =
+                desiredLocation.by(withOffset: 0) - view.by(withOffset: -40)
+            typePicker = TypePicker().then {
+                $0.frame.size.width = view.frame.width - 60
+                $0.frame.size.height = height
+                $0.frame.origin.y = desiredLocation.by(withOffset: 10)
+                $0.center.x = view.frame.width/2
+            }
+            view.addSubview(typePicker!)
+            typePicker!.delegate = self
+            typePicker!.alpha = 0
+            typePicker!.backgroundColor = UIColor.white
+            UIView.animate(withDuration: 0.5, animations: {
+                self.typePicker!.alpha = 1
+            })
+        } else {
+            UIView.animate(withDuration: 0.5, animations: {
+                self.typePicker!.alpha = 0
+                }, completion: {
+                    (completed) in
+                    if completed {
+                       self.typePicker!.removeFromSuperview()
+                        self.typePicker = nil
+                    }
+            })
+        }
     }
     
+    // helps resolve internet connectivity issues when user leaves and returns to the app */
     func applicationWillEnterForeground(_ notification: Notification) {
         if let appDelegate = appDelegate {
             let status = appDelegate.status
@@ -112,14 +131,12 @@ class ViewController: UIViewController {
         }
     }
     
-    func applicationWillEnterBackground(_ notification: Notification) {
-        print("did enter background")
-    }
-    
+    // segue performed with the test button
     @IBAction func testSegue(_ sender: AnyObject) {
         self.performSegue(withIdentifier: "toDetail", sender: self)
     }
     
+    // grabs data from Google Search
     func parse(_ json: [NSDictionary]?) {
         if json == nil { Helper.connectionHandler(host: self) }
         let array: [String?]
@@ -136,41 +153,37 @@ class ViewController: UIViewController {
                 manager.stopUpdatingLocation()
             }
         }
-        resultDetail = Array(repeating: NSDictionary(),
-                             count: results!.count)
         if !Reachability.isConnected() { return }
-        // Think about the performance implications of doing this
-        // Should not be too much overhead on 20 queries
-        //
-        for (i, _) in results!.enumerated() {
-            let place_id  = results?[i]["place_id"] as? String
-            if let id = place_id {
-                Search.detailQuery(byPlaceID: id,
-                                   atIndex: i,
-                                   returnData: loadDetails)
-            }
-        }
         readyToSegue = true
         print("done")
     }
     
-    // completion block for query
-    // TODO: - results are appended to array as the asynchronous requests are
-    // completed. This is undesired behavior. Results should append sequentially
-    func loadDetails(_ details: NSDictionary?, _ index: Int?) {
-        if let data = details {
-            guard let result = data["result"] as? NSDictionary else {
-                // TODO: - Handle this error
-                return
+    func runQuery(string: String) {
+        if let appDelegate = appDelegate {
+            if let manager = appDelegate.locationManager {
+                if let location = manager.location {
+                    Search.GSearh(string, location: location,
+                                  parser: self.parse, host: self)
+                }
             }
-            resultDetail![index!] = result
-        } else {
-            //TODO: - handle this error
         }
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
+    /*  MARK:- TypePickerDelegate method */
+    
+    /*  lets the user know which location type they have chosen
+     *  starts a new query once user selects a new location
+     *
+     */
+    func setDesiredLocation(using: TypePicker) {
+        let location = using.chosen
+        if let result = location?.replacingOccurrences(of: "_", with: " ") {
+            desiredLocation.text = result
+            qstring = result
+        }
+        if let query = location {
+            runQuery(string: query)
+        }
     }
 
 }
@@ -190,17 +203,7 @@ extension ViewController {
             $0.image = UIImage(named: "ShakeLogo")
         }
         
-        if let appDelegate = self.appDelegate {
-            if let manager = appDelegate.locationManager {
-                
-                if let location = manager.location {
-                    let query: String = "convenience_store"
-                    Search.GSearh(query, location: location, parser: self.parse,
-                                  host: self)
-                }
-            }
-        }
-
+        runQuery(string: "convenience_store")
         mainView.addSubview(logo)
         self.view.addSubview(mainView)
         initialLoadAnimation(mainView, image: logo)
@@ -224,18 +227,16 @@ extension ViewController {
     }
     
     func fadeOut(_ view: UIView) {
-        UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions(), animations: {
+        UIView.animate(withDuration: 0.5, delay: 0,
+                       options: UIViewAnimationOptions(), animations: {
             view.alpha = 0
-            
             }, completion: {
-                _ -> Void in
-                view.removeFromSuperview()
-                
+            (completed) in
+                if completed { view.removeFromSuperview() }
         })
         
     }
 }
-
 
 
 
