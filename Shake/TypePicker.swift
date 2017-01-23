@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol TypePickerDelegate: class {
     func setDesiredLocation(using: TypePicker)
@@ -157,19 +158,13 @@ extension TypePicker: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
         chosen = choicesArray[index]
-        delegate?.setDesiredLocation(using: self)
+        DispatchQueue.main.async {
+            self.delegate?.setDesiredLocation(using: self)
+        }
+        
     }
     
 }
-
-
-
-
-
-
-
-
-
 
 
 

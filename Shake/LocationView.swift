@@ -5,6 +5,10 @@
 //  Created by Tony Padilla on 6/11/16.
 //  Copyright © 2016 Tony Padilla. All rights reserved.
 //
+import Foundation
+import UIKit
+import CoreLocation
+
 
 /*  MARK: -  Protocol LocationViewDelegate
  *
@@ -38,7 +42,7 @@ class Location: UIView, DetailViewDataSource {
     @IBOutlet weak var cost: UILabel!
     
     // JSON object as a dictionary
-    var rawData: NSDictionary? {
+    var rawData: [String:AnyObject]? {
         didSet {
             name.text = getName()
             name.adjustsFontSizeToFitWidth = true
@@ -59,14 +63,23 @@ class Location: UIView, DetailViewDataSource {
     // delegates tasks to DestinationViewController
     weak var delegate: LocationViewDelegate?
     
-    var coordinates: (Double, Double)?
+    var coordinates: (Double, Double)? {
+        didSet {
+            if coordinates != nil {
+                if let aD = appDelegate {
+                    aD.dest = CLLocationCoordinate2D(latitude: coordinates!.0,
+                                                     longitude: coordinates!.1)
+                }
+            }
+        }
+    }
     var phoneNumber: String?
     var address: String?
     var formatAddress: String?
     var isOpen: Bool = false
     var reviews: NSArray?
     var weeklyHours: Array<String>?
-    var openPeriods: Array<NSDictionary>?
+    var openPeriods: Array<[String:AnyObject]>?
     var types: Array<String>?
     var mainType: String?
     var website: String?
@@ -152,8 +165,8 @@ class Location: UIView, DetailViewDataSource {
     // Retrieves coordinates used for compass in DestinationViewController
     // in conjunction with location updates
     private func getCoords() -> (Double, Double)? {
-        if let geo = rawData?["geometry"] as? NSDictionary {
-            if let location = geo["location"] as? NSDictionary {
+        if let geo = rawData?["geometry"] as? [String:AnyObject] {
+            if let location = geo["location"] as? [String:AnyObject] {
                 if let lat = location["lat"], let lng = location["lng"] {
                     return (lat as! Double, lng as! Double)
                 } else {
@@ -173,23 +186,31 @@ class Location: UIView, DetailViewDataSource {
     
     // Updates Location object based on whether or not location is open
     private func openRn() {
-        if let hours = rawData?["opening_hours"] as? NSDictionary {
-            if let open = hours["open_now"] as? Int {
-                if open == 1 { self.isOpen = true }
-                ratingView.backgroundColor = (open == 1) ?
-                    Colors.mediumSeaweed: Colors.mediumFirebrick
-                name.textColor = (open == 1) ?
-                    Colors.mediumSeaweed: Colors.mediumFirebrick
+        if let hours = rawData?["opening_hours"] as? [String:AnyObject] {
+            if hours["open_now"] == nil {
+                setSchemeForUnavailableTimes()
+                return
             } else {
-                self.isOpen = false
-                ratingView.backgroundColor = Colors.mediumFirebrick
-                name.textColor = Colors.mediumFirebrick
+                let open: Bool? = hours["open_now"] as? Bool
+                if open == nil {
+                    setSchemeForUnavailableTimes()
+                    return
+                }
+                self.isOpen = (open!) ? true:false
+                ratingView.backgroundColor = (open!) ?
+                    Colors.mediumSeaweed: Colors.mediumFirebrick
+                name.textColor = (open!) ?
+                    Colors.mediumSeaweed: Colors.mediumFirebrick
             }
         } else {
-            self.isOpen = false
-            ratingView.backgroundColor = Colors.mediumFirebrick
-            name.textColor = Colors.mediumFirebrick
+            setSchemeForUnavailableTimes()
         }
+    }
+    
+    private func setSchemeForUnavailableTimes() {
+        self.isOpen = false
+        ratingView.backgroundColor = Colors.mediumFirebrick
+        name.textColor = Colors.mediumFirebrick
     }
     
     // retrieves location photos, but only displays one on Location object
@@ -197,14 +218,35 @@ class Location: UIView, DetailViewDataSource {
         if let photos = rawData?["photos"] as? NSArray {
             // TODO: - there isn't necessarily just one of these
             // pass them on to DetailView
-            if let ref_obj = photos[0] as? NSDictionary {
+            if let ref_obj = photos[0] as? [String:AnyObject] {
                 if let ref = ref_obj["photo_reference"] as? String {
-                    Search.retrieveImageByReference(
-                        ref: ref, target: self.image,
-                        maxWidth: Int(self.image.frame.width))
+                    let width = Int(self.image.frame.width)
+                    var key: String?
+                    if appDelegate == nil { key = " "}
+                    else { key = appDelegate!.getApiKey() }
+                    let session = URLSession.shared
+                    let params: Parameters = ["maxwidth":"\(width)",
+                                              "photoreference":"\(ref)",
+                                              "key":"\(key!)"]
+                    var search = GoogleSearch(type: .PHOTO, parameters: params)
+                    search.makeRequest(session, handler: responseHandler)
+                    
                 }
             }
         } else { image.image = UIImage(named: "station") }
+    }
+    
+    private func responseHandler(data: Data?) {
+        if data == nil { //TODO: - 
+        }
+        let image = UIImage(data: data!)
+        if image == nil { //TODO: -
+        } else {
+            DispatchQueue.main.async {
+                self.image.image = image!
+            }
+        }
+        
     }
     
     private func getPhoneNum() -> String? {
@@ -263,10 +305,10 @@ class Location: UIView, DetailViewDataSource {
     }
     
     private func getHours() {
-        if let hours = rawData?["opening_hours"] as? NSDictionary {
+        if let hours = rawData?["opening_hours"] as? [String:AnyObject] {
             if let periods = hours["periods"] as? NSArray,
                 let text = hours["weekday_text"] as? NSArray {
-                openPeriods = periods as? Array<NSDictionary>
+                openPeriods = periods as? Array<[String:AnyObject]>
                 weeklyHours = text as? Array<String>
             }
         }
@@ -363,6 +405,7 @@ class Location: UIView, DetailViewDataSource {
             detailView.hoursAvailable = true
             detailView.hoursArray = arr
             let i = Helper.dayOfWeek() - 1
+            print("day of week is \(i)")
             let day = weekdays[i]
             var string = arr[i].replacingOccurrences(of: day, with: "")
             // CASE location open 24 hours
@@ -439,7 +482,7 @@ class Location: UIView, DetailViewDataSource {
                                            width: detailView.frame.width,
                                            height: (1.5)*detailView.gHeight)
                 let reviewView =
-                    ReviewView(frame: frame, rawData: review as? NSDictionary)
+                    ReviewView(frame: frame, rawData: review as? [String:AnyObject])
                 reviewView.setNeedsDisplay()
                 yoffset += reviewView.frame.height
                 detailView.expandedReviewView.addSubview(reviewView)
@@ -533,14 +576,6 @@ class DualView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-
-
-
-
-
-
-
 
 
 

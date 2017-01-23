@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1C4C6AB8747BCA291F316878 /* Pods_Shake.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFF043A7DFB50B25B140AED8 /* Pods_Shake.framework */; };
 		342119751DC52C8900683982 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342119741DC52C8900683982 /* DetailView.swift */; };
+		3459C2131E346DC2001DCDEC /* GoogleSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3459C2121E346DC2001DCDEC /* GoogleSearch.swift */; };
 		3484E0D81D9C49C100038F25 /* GPlace.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3484E0D71D9C49C100038F25 /* GPlace.xib */; };
 		3484E0DA1D9DA7DF00038F25 /* CosmosDistrib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3484E0D91D9DA7DF00038F25 /* CosmosDistrib.swift */; };
 		349BB1131DB191DD0070695E /* SanFranciscoFont-master in Resources */ = {isa = PBXBuildFile; fileRef = 349BB1121DB191DD0070695E /* SanFranciscoFont-master */; };
@@ -35,7 +36,6 @@
 		349BB13D1DB191F80070695E /* SanFranciscoText-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 349BB1281DB191F80070695E /* SanFranciscoText-SemiboldItalic.otf */; };
 		34D83D821DC289C8005A3EFC /* TypePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34D83D811DC289C8005A3EFC /* TypePicker.xib */; };
 		34D83D841DC28B4A005A3EFC /* TypePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D83D831DC28B4A005A3EFC /* TypePicker.swift */; };
-		E722B32E1CFC316700AD2A13 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = E722B32D1CFC316700AD2A13 /* Search.swift */; };
 		E72B55321CFD749B000CD07E /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72B55311CFD749B000CD07E /* Reachability.swift */; };
 		E75034941CFBA18A003F5625 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75034931CFBA18A003F5625 /* Helper.swift */; };
 		E75034961CFBAFC3003F5625 /* DestinationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75034951CFBAFC3003F5625 /* DestinationViewController.swift */; };
@@ -50,6 +50,7 @@
 
 /* Begin PBXFileReference section */
 		342119741DC52C8900683982 /* DetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
+		3459C2121E346DC2001DCDEC /* GoogleSearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoogleSearch.swift; sourceTree = "<group>"; };
 		3484E0D71D9C49C100038F25 /* GPlace.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GPlace.xib; sourceTree = "<group>"; };
 		3484E0D91D9DA7DF00038F25 /* CosmosDistrib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CosmosDistrib.swift; sourceTree = "<group>"; };
 		349BB1121DB191DD0070695E /* SanFranciscoFont-master */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "SanFranciscoFont-master"; path = "Shake/SanFranciscoFont-master"; sourceTree = "<group>"; };
@@ -78,7 +79,6 @@
 		34D83D831DC28B4A005A3EFC /* TypePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypePicker.swift; sourceTree = "<group>"; };
 		58AD71C10A886FCA1ED3E2C1 /* Pods-Shake.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shake.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Shake/Pods-Shake.debug.xcconfig"; sourceTree = "<group>"; };
 		AFF043A7DFB50B25B140AED8 /* Pods_Shake.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Shake.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E722B32D1CFC316700AD2A13 /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		E72B55311CFD749B000CD07E /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		E75034931CFBA18A003F5625 /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		E75034951CFBAFC3003F5625 /* DestinationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DestinationViewController.swift; sourceTree = "<group>"; };
@@ -177,8 +177,8 @@
 				E7F7CEA21CFB8EAA00BA7F1D /* AppDelegate.swift */,
 				E7F7CEA41CFB8EAA00BA7F1D /* ViewController.swift */,
 				E75034951CFBAFC3003F5625 /* DestinationViewController.swift */,
+				3459C2121E346DC2001DCDEC /* GoogleSearch.swift */,
 				3484E0D91D9DA7DF00038F25 /* CosmosDistrib.swift */,
-				E722B32D1CFC316700AD2A13 /* Search.swift */,
 				E75034931CFBA18A003F5625 /* Helper.swift */,
 				E72B55311CFD749B000CD07E /* Reachability.swift */,
 				E7A843181D0CE6AA0061C535 /* LocationView.swift */,
@@ -225,13 +225,14 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "Tony Padilla";
 				TargetAttributes = {
 					E7F7CE9E1CFB8EAA00BA7F1D = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = A2N9APJ4GT;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -344,6 +345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E72B55321CFD749B000CD07E /* Reachability.swift in Sources */,
+				3459C2131E346DC2001DCDEC /* GoogleSearch.swift in Sources */,
 				342119751DC52C8900683982 /* DetailView.swift in Sources */,
 				E7A843191D0CE6AA0061C535 /* LocationView.swift in Sources */,
 				34D83D841DC28B4A005A3EFC /* TypePicker.swift in Sources */,
@@ -351,7 +353,6 @@
 				3484E0DA1D9DA7DF00038F25 /* CosmosDistrib.swift in Sources */,
 				E7F7CEA51CFB8EAA00BA7F1D /* ViewController.swift in Sources */,
 				E7F7CEA31CFB8EAA00BA7F1D /* AppDelegate.swift in Sources */,
-				E722B32E1CFC316700AD2A13 /* Search.swift in Sources */,
 				E75034941CFBA18A003F5625 /* Helper.swift in Sources */,
 				E75034961CFBAFC3003F5625 /* DestinationViewController.swift in Sources */,
 			);
@@ -418,7 +419,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -460,7 +461,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -482,7 +483,7 @@
 				INFOPLIST_FILE = Shake/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.XC.Me.Shake;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Proto.Shake;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Shake/Shake-Bridging-Header.h";
@@ -504,7 +505,7 @@
 				INFOPLIST_FILE = Shake/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.XC.Me.Shake;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Proto.Shake;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Shake/Shake-Bridging-Header.h";

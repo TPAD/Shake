@@ -18,7 +18,7 @@ public struct Reachability {
     static func isConnected() -> Bool {
         var zeroAddress = sockaddr_in()
         zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
-        zeroAddress.sin_family = sa_family_t(AF_INET)
+        zeroAddress.sin_family = sa_family_t(AF_INET)       //IPv4
         
         guard let defaultRouteReachability = withUnsafePointer(to: &zeroAddress, {
             $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {

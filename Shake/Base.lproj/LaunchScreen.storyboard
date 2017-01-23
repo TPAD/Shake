@@ -20,7 +20,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ShakeLogo" translatesAutoresizingMaskIntoConstraints="NO" id="NfL-ex-bhE">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Shake-icon-inverse" translatesAutoresizingMaskIntoConstraints="NO" id="NfL-ex-bhE">
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="NfL-ex-bhE" secondAttribute="height" id="2tX-6U-jmB"/>
                                 </constraints>
@@ -40,6 +40,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="ShakeLogo" width="228" height="228"/>
+        <image name="Shake-icon-inverse" width="341" height="341"/>
     </resources>
 </document>

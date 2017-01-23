@@ -5,31 +5,40 @@
 //  Created by Tony Padilla on 5/29/16.
 //  Copyright © 2016 Tony Padilla. All rights reserved.
 //
-
 import Foundation
 import UIKit
-import GoogleMaps
-import Alamofire
-import AlamofireImage
+import CoreLocation
 
+// TODO: - interacting with Location is buggy (gesture recognizer interference)
+
+enum Redirect { case Call, Map, Web }
 /*
  *  DestinationViewController is the detail view controller
- *  It displays a Location object, shows the user how far away it is,
- *  and where they are relative to the location.
- *  information is displayed in the Location object and more details on
- *  the location can be requested by tapping the Location object
+ *  It displays a Location object, shows the user how far away the location is,
+ *  and where the user is relative to the location.
+ *  Information is displayed in the Location object and more details on
+ *  the location can be requested by tapping the Location object.
+ *  Slide the DetailView up or down to enter full-screen or dismiss respectively.
+ *  DetailView can scroll if expanded in which case the user can drag down %40
+ *  of the screen to dismiss.
  *
  */
 class DestinationViewController: UIViewController,
                                  DualViewDelegate,
                                  DetailViewDelegate,
-                                 LocationViewDelegate
+                                 LocationViewDelegate,
+                                 ViewControllerDelegate
 {
-    
-    var distanceLabel: UILabel?
-    var addressLabel: UILabel?
-    var locationNames: [String?]?
-    var userLocation: CLLocation?
+    //ViewControllerDelegate routine used to initalize values
+    internal func transferDataFrom(viewController: ViewController) {
+        self.results = viewController.results
+        self.userCoords = viewController.userCoord
+        self.locationNames = viewController.locationNames
+    }
+    var shakeNum: Int = 0                  // kept to iterate through results
+    var userLocation: CLLocation?          // set at initialization time
+    var locationNames: [String?]?          // kept to reference locations if needed
+    var results: Array<[String:NSObject]>?        /* place query results (20) */
     var userCoords: CLLocationCoordinate2D? {
         didSet {
             if userCoords != nil {
@@ -39,13 +48,12 @@ class DestinationViewController: UIViewController,
         }
             
     }
-        
-    var results: Array<NSDictionary>?              /* place query results (20) */
-    var shakeNum: Int = 0
-    var resultDetail: Array<NSDictionary>?        /* detail query results (20) */
-    var locationView: Location?                   /* object displays location */
+    var resultDetail: Array<[String:NSObject]>?      /* detail query results (20) */
+    var distanceLabel: UILabel?
+    var addressLabel: UILabel?
     var compass: UIImageView?
-    var detailView: DetailView?                   /* displays details */
+    var locationView: Location?                      /* object displays location */
+    var detailView: DetailView?                      /* displays details */
     var detailShouldDisplay: Bool = false {
         didSet {
             DispatchQueue.main.async {
@@ -68,136 +76,16 @@ class DestinationViewController: UIViewController,
         }
     }
     
-    // MARK: - OVERRIDDEN FUNCTIONS
-    /* Detects shake */
-    override func motionBegan(_ motion: UIEventSubtype, with event: UIEvent?) {
-        // requires that the view is loaded
-        if (self.isViewLoaded == true && self.view.window != nil) {
-            if let motion = event {
-                if motion.subtype == .motionShake {
-                    // safely traverses the data array
-                    if let res = self.results {
-                        let max = res.count
-                        shakeNum = (shakeNum < max - 1 || max != 0) ?
-                            shakeNum + 1: 0
-                    }
-                    // update locationView
-                    clearObjectData()
-                    retrieveJSON(atIndex: shakeNum)
-                    locationView?.requestViewUpdate()
-                    distanceLabel?.text =
-                        locationView?.distanceFromLocation(userLocation!)
-                    addressLabel?.text =
-                        locationView?.address
-                    if let aD = appDelegate {
-                        if let coords = locationView!.coordinates {
-                            aD.dest =
-                                CLLocationCoordinate2D(latitude: coords.0,
-                                                       longitude: coords.1)
-                        }
-                    }
-                    if locationView?.state == .pressed {
-                        locationView?.longTap(nil)
-                    }
-                    self.detailShouldDisplay = false
-                }
-            }
-        }
-    }
-    
-    // clears Location data so the object is reused instead of reinitialized
-    private func clearObjectData() {
-        locationView?.ratingView.backgroundColor = Colors.mediumFirebrick
-        locationView?.name.textColor = Colors.mediumFirebrick
-        locationView?.phoneNumber = nil
-        locationView?.address = nil
-        locationView?.reviews = nil
-        locationView?.weeklyHours = nil
-        locationView?.openPeriods = nil
-        locationView?.types = nil
-        locationView?.mainType = nil
-        locationView?.website = nil
-    }
-    
-    private func retrieveJSON(atIndex: Int) {
-        if let res = results {
-            if let id = res[atIndex]["place_id"] as? String {
-                Search.detailQuery(byPlaceID: id, returnData: loadDetails)
-            }
-        }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // intialize locationView object
-        let width: CGFloat = (0.85)*view.frame.width
-        let y: CGFloat = (0.15)*self.view.bounds.height
-        let frame = CGRect(x: 0, y: y, width: width, height: width)
-        let tap = UITapGestureRecognizer(target: self,
-                                         action: #selector(toggleDetail(_:)))
-        locationView = Location(frame: frame)
-        // Load the first result of the query
-        retrieveJSON(atIndex: shakeNum)
-        locationView?.center.x = view.center.x
-        locationView?.rawData = (resultDetail?.count != 0) ?
-            resultDetail?[shakeNum]: nil
-        locationView?.delegate = self
-        view.addGestureRecognizer(tap)
-        view.addSubview(locationView!)
-        // initialize compass and location manager
-        initCompass()
-        locationManagerSetup()
-        if let aD = appDelegate {
-            if let coords = locationView!.coordinates {
-                aD.dest =
-                    CLLocationCoordinate2D(latitude: coords.0,
-                                           longitude: coords.1)
-            }
-            
-        }
-    }
-    
-    // completion block for query
-    func loadDetails(_ details: NSDictionary?) {
-        if let data = details {
-            guard let result = data["result"] as? NSDictionary else {
-                // TODO: - Handle this error
-                return
-            }
-            if let location = locationView {
-                location.rawData = result
-            }
-            if distanceLabel == nil && addressLabel == nil {
-                initDescriptionViews()
-            }
-            // initalize address and distance label
-            distanceLabel?.text =
-                locationView?.distanceFromLocation(userLocation!)
-                ?? "Distance from Location"
-            addressLabel?.text = locationView?.address
-                ?? "Location Address"
-        } else {
-            //TODO: - handle this error
-        }
-    }
-    
-    // manages the detail display
-    func toggleDetail(_ sender: UIGestureRecognizer) {
-        let bounds: CGRect = locationView!.frame
-        let pointTapped: CGPoint = sender.location(in: view)
-        if bounds.contains(pointTapped) {
-            detailShouldDisplay = !detailShouldDisplay
-        }
-    }
-    
-    // This tap only exists when user has long pressed location
-    func userHasTapped(_ sender: UIGestureRecognizer) {
-        let bounds: CGRect = locationView!.frame
-        let pointTapped: CGPoint = sender.location(in: view)
-        if !bounds.contains(pointTapped) {
-            locationView?.toggleState()
-            view.removeGestureRecognizer(sender)
-        }
+    // compass initializer
+    private func initCompass() {
+        let cWidth: CGFloat = locationView!.frame.width + 50
+        let cHeight: CGFloat = locationView!.frame.height + 50
+        let cx: CGFloat = locationView!.frame.origin.x - 25
+        let cy: CGFloat = locationView!.frame.origin.y - 25
+        let cframe = CGRect(x: cx, y: cy, width: cWidth, height: cHeight)
+        compass = UIImageView(frame: cframe)
+        compass!.image = UIImage(named: "comp")
+        view.insertSubview(compass!, belowSubview: locationView!)
     }
     
     // detail view initializer
@@ -246,6 +134,10 @@ class DestinationViewController: UIViewController,
         view.addSubview(distanceLabel!)
     }
     
+    /*
+     *  initializes an alert controller giving user redirect oprions
+     *  - parameter type: determines where user would like to redirect
+     */
     private func initRedirectAlertController(type: Redirect) {
         switch type {
         case .Call:
@@ -277,7 +169,7 @@ class DestinationViewController: UIViewController,
             if let url = detailView?.website {
                 let title: String = "Open \(url) in Safari?"
                 let webAction: UIAlertAction =
-                    AlertActions.goTo(which: .Web, with: url)
+                    AlertActions.goTo(which: type, with: url)
                 let actions: [UIAlertAction] = [webAction, AlertActions.cancel]
                 Helper.initAlertContoller(title: title, message: "", host: self,
                                           actions: actions, style: .actionSheet,
@@ -287,32 +179,177 @@ class DestinationViewController: UIViewController,
         }
     }
     
-    // compass initializer
-    func initCompass() {
-        let cWidth: CGFloat = locationView!.frame.width + 50
-        let cHeight: CGFloat = locationView!.frame.height + 50
-        let cx: CGFloat = locationView!.frame.origin.x - 25
-        let cy: CGFloat = locationView!.frame.origin.y - 25
-        let cframe = CGRect(x: cx, y: cy, width: cWidth, height: cHeight)
-        compass = UIImageView(frame: cframe)
-        compass!.image = UIImage(named: "comp")
-        view.insertSubview(compass!, belowSubview: locationView!)
+    // clears Location data so the object is reused instead of reinitialized
+    private func clearObjectData() {
+        locationView?.ratingView.backgroundColor = Colors.mediumFirebrick
+        locationView?.name.textColor = Colors.mediumFirebrick
+        locationView?.phoneNumber = nil
+        locationView?.address = nil
+        locationView?.reviews = nil
+        locationView?.weeklyHours = nil
+        locationView?.openPeriods = nil
+        locationView?.types = nil
+        locationView?.mainType = nil
+        locationView?.website = nil
     }
     
-    // APP Delegate uses this method to update distance in real time
-    // TODO: - implement this
-    func updateDistance(_ manager: CLLocationManager, destination: CLLocation) {
-        DispatchQueue.main.async(execute: {
-            if let location: CLLocation = manager.location {
-                let destination: CLLocation = destination
-                let distance = location.distanceInMilesFromLocation(destination)
-                let dString: String = String(format: "%.2f", distance)
-                self.distanceLabel!.text = "\(dString)mi"
+    /*
+     *  queries location details by making api request
+     *  - parameter atIndex: index of results array to access for relevant info
+     */
+    private func retrieveJSON(atIndex: Int) {
+        if appDelegate == nil { return }
+        if let res = results {
+            if let id = res[atIndex]["place_id"] as? String {
+                let params: Parameters = ["placeid": "\(id)",
+                    "key": "\(appDelegate!.getApiKey())"]
+                let session = URLSession.shared
+                var search = GoogleSearch(type: .DETAIL, parameters: params)
+                search.makeRequest(session, handler: responseHandler)
             }
-        })
+        }
+    }
+    
+    /*
+     *  response handler for response received from api call
+     *  updates ui components with response details if successful
+     *  presents alerts signaling errors otherwise
+     *  - parameter data: JSON data in the form of bytes from response
+     *
+     */
+    private func responseHandler(data: Data?) {
+        if data != nil {
+            DispatchQueue.main.sync {
+                do {
+                    let json = try
+                        JSONSerialization.jsonObject(with: data!,
+                                                     options: .mutableContainers)
+                        as! NSDictionary
+                    let status: String? = json["status"] as? String
+                    if status != nil && status! == "OK" {
+                        let result = json["result"] as? [String:NSObject]
+                        if let location = self.locationView {
+                            location.rawData = result
+                        }
+                        // initalize address and distance label on first call only
+                        if self.distanceLabel == nil && self.addressLabel == nil {
+                            self.initDescriptionViews()
+                        }
+                        self.distanceLabel?.text =
+                            self.locationView?.distanceFromLocation(self.userLocation!)
+                            ?? "Distance from Location"
+                        self.addressLabel?.text = self.locationView?.address
+                            ?? "Location Address"
+                    }
+                } catch {
+                    Helper.jsonConversionError(self)
+                }
+            }
+        } else {
+            Helper.invalidResponseError(self)
+        }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // intialize locationView object
+        let width: CGFloat = (0.85)*view.frame.width
+        let y: CGFloat = (0.15)*self.view.bounds.height
+        let frame = CGRect(x: 0, y: y, width: width, height: width)
+        let tap = UITapGestureRecognizer(target: self,
+                                         action: #selector(toggleDetail(_:)))
+        locationView = Location(frame: frame)
+        // Load the first result of the query
+        retrieveJSON(atIndex: shakeNum)
+        locationView?.center.x = view.center.x
+        locationView?.rawData = (resultDetail?.count != 0) ?
+            resultDetail?[shakeNum]: nil
+        locationView?.delegate = self
+        view.addGestureRecognizer(tap)
+        view.addSubview(locationView!)
+        initDescriptionViews()
+        // initialize compass and location manager
+        initCompass()
+        locationManagerSetup()
+        let swipe = UISwipeGestureRecognizer(target: self,
+                                             action: #selector(unwindFromDetailVC(_:)))
+        swipe.direction = .right
+        view.addGestureRecognizer(swipe)
+    }
+    
+    /* Detects shake */
+    override func motionBegan(_ motion: UIEventSubtype, with event: UIEvent?) {
+        // requires that the view is loaded
+        if (self.isViewLoaded == true && self.view.window != nil) {
+            if let motion = event {
+                if motion.subtype == .motionShake {
+                    // safely traverses the data array
+                    if let res = self.results {
+                        let max = res.count
+                        shakeNum = (shakeNum < max - 1 || max != 0) ?
+                            shakeNum + 1: 0
+                    }
+                    // update locationView
+                    clearObjectData()
+                    retrieveJSON(atIndex: shakeNum)
+                    locationView?.requestViewUpdate()
+                    distanceLabel?.text =
+                        locationView?.distanceFromLocation(userLocation!)
+                    addressLabel?.text =
+                        locationView?.address
+                    if let aD = appDelegate {
+                        if let coords = locationView!.coordinates {
+                            aD.dest =
+                                CLLocationCoordinate2D(latitude: coords.0,
+                                                       longitude: coords.1)
+                        }
+                    }
+                    if locationView?.state == .pressed {
+                        locationView?.longTap(nil)
+                    }
+                    self.detailShouldDisplay = false
+                }
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        let VC: UIViewController? = UIApplication.shared.keyWindow?.rootViewController
+        if let destination = VC as? ViewController {
+            destination.animateSplash = false
+        }
+    }
+    
+    // swipe gesture action for dismissing view controller  #SELECTOR
+    func unwindFromDetailVC(_ sender: UISwipeGestureRecognizer) {
+        if !detailShouldDisplay {
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    // manages the detail display #SELECTOR
+    func toggleDetail(_ sender: UIGestureRecognizer) {
+        if detailShouldDisplay == false {
+            let bounds: CGRect = locationView!.frame
+            let pointTapped: CGPoint = sender.location(in: view)
+            if bounds.contains(pointTapped) {
+                detailShouldDisplay = !detailShouldDisplay
+            }
+        }
+    }
+    
+    // This tap only exists when user has long pressed location #SELECTOR
+    func userHasTapped(_ sender: UIGestureRecognizer) {
+        let bounds: CGRect = locationView!.frame
+        let pointTapped: CGPoint = sender.location(in: view)
+        if !bounds.contains(pointTapped) {
+            locationView?.toggleState()
+            view.removeGestureRecognizer(sender)
+        }
     }
     
     // notifies location manager that usr needs location updates
+    // also accessed from app delegate when user re-enters app
     func locationManagerSetup() {
         if let appDelegate = appDelegate {
             if let manager = appDelegate.locationManager {
@@ -327,21 +364,16 @@ class DestinationViewController: UIViewController,
         }
     }
     
-    /* navigates out of app to make a phone call */
-    func callAction() {
-        if let num = locationView?.phoneNumber {
-            if let url = URL(string: "tel://\(num.formattedForCall())") {
-                if #available(iOS 10.0, *) {
-                    UIApplication.shared.open(url, completionHandler: nil)
-                } else {
-                    // Fallback on earlier versions
-                }
+    // AppDelegate uses this method to update distance in real time
+    func updateDistance(_ manager: CLLocationManager, destination: CLLocation) {
+        DispatchQueue.main.async(execute: {
+            if let location: CLLocation = manager.location {
+                let destination: CLLocation = destination
+                let distance = location.distanceInMilesFromLocation(destination)
+                let dString: String = String(format: "%.2f", distance)
+                self.distanceLabel!.text = "\(dString)mi"
             }
-        } else {
-            //view.undoSwipe(onView: view.dualView!, sender: sender)
-            // TODO: alert of sorts
-            print("Action can't be completed RN")
-        }
+        })
     }
     
     // MARK: - LocationViewDelegate
@@ -375,8 +407,6 @@ class DestinationViewController: UIViewController,
     }
     
     // MARK: - DualViewDelegate
-    
-    /* initializes navigation flow for opening google maps (if possible) */
     func navigationAction() {
         initRedirectAlertController(type: .Map)
     }
@@ -386,11 +416,9 @@ class DestinationViewController: UIViewController,
     }
     
     // MARK: - DetailViewDelegate
-    
     func redirectToCall() {
         initRedirectAlertController(type: .Call)
     }
-    
     
     func redirectToMaps() {
         initRedirectAlertController(type: .Map)
@@ -401,18 +429,13 @@ class DestinationViewController: UIViewController,
     }
     
     func saveLocation() {
+        //TODO: - implement this 
         print("save")
     }
     
     func remove(detailView: DetailView) {
         detailShouldDisplay = false
     }
-    
-    
-    override func didReceiveMemoryWarning() {
-        print("received memory warning")
-    }
-    
 }
 
 

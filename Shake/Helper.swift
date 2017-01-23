@@ -5,6 +5,10 @@
 //  Created by Tony Padilla on 5/29/16.
 //  Copyright © 2016 Tony Padilla. All rights reserved.
 //
+import Foundation
+import UIKit
+import CoreLocation
+import GoogleMaps
 
 /*
  *  Helper file containing various class extensions and helper structs
@@ -14,7 +18,7 @@ public let weekdays: [String] = ["Monday:", "Tuesday:", "Wednesday:",
                        "Thursday:", "Friday:", "Saturday:", "Sunday:"]
 
 // global appDelegate reference is a little suspect
-weak var appDelegate: AppDelegate? =
+internal var appDelegate: AppDelegate? =
     UIApplication.shared.delegate as? AppDelegate
 
 /*
@@ -99,9 +103,6 @@ public struct Colors {
     }
 }
 
-// enum used to determine redirection from DestinationViewController
-public enum Redirect { case Call, Map, Web }
-
 /*
  *  MARK: - struct AlertActions
  *  contains the UIAlertActions used throughout the project
@@ -112,6 +113,10 @@ public struct AlertActions {
     // declaration for an object user can use to dismiss a UIAlertController
     static var cancel: UIAlertAction = {
         return UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+    }()
+    
+    static var ok: UIAlertAction = {
+        return UIAlertAction(title: "Ok", style: .cancel, handler: nil)
     }()
     
     /*  declaration for an object user can use to navigate to their settings
@@ -126,7 +131,7 @@ public struct AlertActions {
     
     /*  returns an object the user can use to navigate out of app to
      *  call a location, for a map to a location (Google Maps),
-     *  or to Safari browser to the location's website
+     *  or to open Safari browser with location's website
      */
     static func goTo(which: Redirect, with: String) -> UIAlertAction {
         let action = UIAlertAction(title: "Ok", style: .default, handler: {
@@ -165,6 +170,40 @@ public struct AlertActions {
 }
 
 public struct Helper {
+    
+    static func jsonConversionError(_ host: UIViewController) {
+        let message: String = "error converting JSON"
+        Helper.initAlertContoller(title: "", message: message, host: host,
+                                  actions: [AlertActions.ok], style: .alert,
+                                  completion: nil)
+    }
+    
+    static func invalidResponseError(_ host: UIViewController) {
+        let message: String = "error parsing response or url"
+        Helper.initAlertContoller(title: "", message: message, host: host,
+                                  actions: [AlertActions.ok], style: .alert,
+                                  completion: nil)
+    }
+    
+    static func alertOnBadResponse(status: String, host: UIViewController) {
+        let title: String = "Request Failed"
+        var message: String?
+        if status == "ZERO_RESULTS" {
+            message = "search returned 0 results"
+        } else if status == "OVER_QUERY_LIMIT"  {
+            message = "search quota exceeded"
+        } else if status == "REQUEST_DENIED" {
+            message = "request denied, possible invalid key"
+        } else if status == "INVALID_REQUEST" {
+            message = "required query parameter wrong or missing"
+        } else {
+            message = status
+        }
+        if message == nil { message = " " }
+        Helper.initAlertContoller(title: title, message: message!, host: host,
+                                  actions: [AlertActions.ok], style: .alert,
+                                  completion: nil)
+    }
     
     static func initAlertContoller(title: String, message: String,
                                    host: UIViewController,
@@ -386,6 +425,7 @@ public extension UIView {
     }
 }
 
+
 public extension CLLocation {
     // converts distance in meters to miles 
     func distanceInMilesFromLocation(_ location: CLLocation) -> Double {
@@ -452,7 +492,8 @@ public extension String {
 public extension UILabel {
 
     func requiredHeight() -> CGFloat {
-        let frame: CGRect = CGRect(x: 0, y: 0, width: self.frame.width,  height: CGFloat.greatestFiniteMagnitude)
+        let frame: CGRect = CGRect(x: 0, y: 0, width: self.frame.width,
+                                   height: CGFloat.greatestFiniteMagnitude)
         let new: UILabel = UILabel(frame: frame)
         new.numberOfLines = 0
         new.lineBreakMode = .byWordWrapping

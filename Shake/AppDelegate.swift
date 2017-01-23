@@ -7,9 +7,9 @@
 //
 
 import UIKit
-import CoreData
-import GoogleMaps
 import CoreLocation
+import Foundation
+import GoogleMaps
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
@@ -71,7 +71,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
      */
     func locationManager(_ manager: CLLocationManager,
                          didUpdateHeading newHeading: CLHeading) {
-        //print("suh dood")
         let here: CLLocationCoordinate2D = manager.location!.coordinate
         if let destination = dest {
             angle = here.angleTo(destination: destination)
@@ -95,7 +94,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                     destinationVC.updateDistance(manager, destination: dest)
                 }
             }
-         }
+        } else {
+            print("destination not found")
+        }
     }
     
     //MARK: - Application functions
@@ -141,6 +142,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
         //self.saveContext()
+    }
+    
+    func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+        print("memory warning")
     }
 }
 

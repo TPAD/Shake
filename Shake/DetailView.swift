@@ -5,13 +5,14 @@
 //  Created by Antonio Padilla on 10/29/16.
 //  Copyright © 2016 Tony Padilla. All rights reserved.
 //
-
+import Foundation
+import UIKit
 
 class InfoView: UIView { }                /* identifier for detail subviews */
 class ReviewsContainerView: InfoView { }  /* identifier for reviews container */
 
 /*  identifier for weekly hours
- *  contains labels to hold location open times information5
+ *  contains labels to hold location open times information
  */
 class WeeklyHoursLabel: UIView {
     
@@ -230,6 +231,7 @@ class DetailView: UIView, UIScrollViewDelegate {
         scrollView.backgroundColor = UIColor.white
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.showsVerticalScrollIndicator = false
+        scrollView.delegate = self
         addSubview(scrollView)
         let swipeUp = UISwipeGestureRecognizer(target: self,
                                                action: #selector(adjustScrollView(_:)))
@@ -336,10 +338,10 @@ class DetailView: UIView, UIScrollViewDelegate {
     
     private func initWebIcon() {
         webIcon = UIButton().then {
-            let y: CGFloat = isOpenView.frame.origin.y + 30
             let x: CGFloat = self.bx(withOffset: 0) - gHeight
             $0.frame =
-                CGRect(x: x, y: y, width: (0.6)*gHeight, height: (0.6)*gHeight)
+                CGRect(x: x, y: 0, width: (0.6)*gHeight, height: (0.6)*gHeight)
+            $0.center.y = nameLabel!.center.y
             $0.setImage(UIImage(named: "wwweb"), for: .normal)
             $0.addTarget(self, action: #selector(handleWebIconTapped(_:)),
                          for: .touchUpInside)
@@ -759,6 +761,15 @@ class DetailView: UIView, UIScrollViewDelegate {
             }
         }
     }
+    
+    /* ScrollViewDelegate methods */
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let threshold: CGFloat = -(0.3)*frame.height
+        if scrollView.contentOffset.y < threshold {
+            delegate?.remove(detailView: self)
+        }
+    }
 }
 
 
@@ -777,7 +788,7 @@ class ReviewView: UIView {
     var imageView: UIImageView!
     var ratingView: UIView!
     
-    init(frame: CGRect, rawData: NSDictionary?) {
+    init(frame: CGRect, rawData: [String:AnyObject]?) {
         super.init(frame: frame)
         backgroundColor = UIColor.white
         initImageView()
@@ -820,7 +831,7 @@ class ReviewView: UIView {
     
     private func initReviewLabel() {
         label = UILabel().then {
-            $0.frame.size.width = (0.8)*bounds.width
+            $0.frame.size.width = (0.75)*bounds.width
             $0.frame.origin.y = nameLabel.by(withOffset: 2)
             $0.frame.origin.x = imageView.bx(withOffset: 10)
             $0.text = "Review Text"
@@ -873,7 +884,7 @@ class ReviewView: UIView {
         ratingView.addSubview(starView)
     }
     
-    private func setReviewText(rawData: NSDictionary?) {
+    private func setReviewText(rawData: [String:AnyObject]?) {
         if let data = rawData {
             label.text = "\"\(data["text"] as! String)\""
             nameLabel.text = data["author_name"] as? String ?? "Name"
@@ -900,8 +911,23 @@ class ReviewView: UIView {
     
     private func setReviewerImage(url: String?) {
         if let URL = url {
-            let new = "https:" + URL
-            Search.requestImageFromURL(url: new, target: imageView)
+            let session = URLSession.shared
+            var search = GoogleSearch(type: .CUSTOM, parameters: nil)
+            search.setCustomURL(URL)
+            search.makeRequest(session, handler: responseHandler)
+        }
+    }
+    
+    private func responseHandler(data: Data?) {
+        if data == nil { //TODO:-
+        } else {
+            let image = UIImage(data: data!)
+            if image == nil { //TODO:-
+            } else {
+                DispatchQueue.main.async {
+                    self.imageView.image = image!
+                }
+            }
         }
     }
 }
