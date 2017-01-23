@@ -1,22 +1,16 @@
 PODS:
-HEAD
   - GoogleMaps (2.1.1):
     - GoogleMaps/Maps (= 2.1.1)
   - GoogleMaps/Base (2.1.1)
   - GoogleMaps/Maps (2.1.1):
     - GoogleMaps/Base
-7293c47c26f59b2a22fcc82b2636e05b1b13d8f5
 
 DEPENDENCIES:
   - GoogleMaps
 
 SPEC CHECKSUMS:
-HEAD
   GoogleMaps: a5b5bbe47734e2443bde781a6aa64e69fdb6d785
-7293c47c26f59b2a22fcc82b2636e05b1b13d8f5
 
 PODFILE CHECKSUM: 218b6f1593cd341fcdc4a9c11720d7b557b831ef
 
-HEAD
 COCOAPODS: 1.2.0.rc.1
-7293c47c26f59b2a22fcc82b2636e05b1b13d8f5
