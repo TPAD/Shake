@@ -1,37 +1,22 @@
 PODS:
-<<<<<<< HEAD
+HEAD
   - GoogleMaps (2.1.1):
     - GoogleMaps/Maps (= 2.1.1)
   - GoogleMaps/Base (2.1.1)
   - GoogleMaps/Maps (2.1.1):
     - GoogleMaps/Base
-=======
-  - Alamofire (4.0.1)
-  - AlamofireImage (3.1.0):
-    - Alamofire (~> 4.0)
-  - GoogleMaps (2.1.0):
-    - GoogleMaps/Maps (= 2.1.0)
-  - GoogleMaps/Base (2.1.0)
-  - GoogleMaps/Maps (2.1.0):
-    - GoogleMaps/Base (= 2.1.0)
->>>>>>> 7293c47c26f59b2a22fcc82b2636e05b1b13d8f5
+7293c47c26f59b2a22fcc82b2636e05b1b13d8f5
 
 DEPENDENCIES:
   - GoogleMaps
 
 SPEC CHECKSUMS:
-<<<<<<< HEAD
+HEAD
   GoogleMaps: a5b5bbe47734e2443bde781a6aa64e69fdb6d785
-=======
-  Alamofire: 7682d43245de14874acd142ec137b144aa1dd335
-  AlamofireImage: bb8c8351c51cb1633bb6be69b6dbbaff37ce65b7
-  GoogleMaps: 06589b9a38097bce0cd6e90f0fd9b5e4b4a9344c
->>>>>>> 7293c47c26f59b2a22fcc82b2636e05b1b13d8f5
+7293c47c26f59b2a22fcc82b2636e05b1b13d8f5
 
 PODFILE CHECKSUM: 218b6f1593cd341fcdc4a9c11720d7b557b831ef
 
-<<<<<<< HEAD
+HEAD
 COCOAPODS: 1.2.0.rc.1
-=======
-COCOAPODS: 1.0.1
->>>>>>> 7293c47c26f59b2a22fcc82b2636e05b1b13d8f5
+7293c47c26f59b2a22fcc82b2636e05b1b13d8f5
