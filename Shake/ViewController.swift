@@ -114,8 +114,9 @@ class ViewController: UIViewController {
             let lat: String = "\(coord.latitude)"
             let lng: String = "\(coord.longitude)"
             let gasParams: Parameters = ["location":"\(lat),\(lng)",
+                "name":"CoinFlip",
                 "rankby":"distance",
-                "type":"gas_station",
+                "type":"atm",
                 "key":"\(appDelegate.getApiKey())"]
             
             var searchGas = GoogleSearch(type: .NEARBY, parameters: gasParams)
@@ -137,6 +138,7 @@ class ViewController: UIViewController {
                 let status: String? = json["status"] as? String
                 if status != nil && status! == "OK" {
                     let res = json["results"]! as! Array<[String: NSObject]>
+                    print(res)
                     for location in res {
                         self.results.append(location)
                     }
