@@ -1,0 +1,6 @@
+framework module Pods_Shake {
+  umbrella header "Pods-Shake-umbrella.h"
+
+  export *
+  module * { export * }
+}
