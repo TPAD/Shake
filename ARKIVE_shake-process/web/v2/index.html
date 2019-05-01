@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="WHAT'S THIS SITE ABOUT?"> <!-- alter this -->
+		<meta name="author" content="Jack Kasbeer">
+		<link rel="shortcut icon" href="images/logo-blue.png"> <!-- alter this -->
+		
+		<!-- Security -->
+
+		<title>Shake!</title> <!-- alter this -->
+		<!-- Style sheets -->
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+		<link href="https://fonts.googleapis.com/css?family=Grand+Hotel" rel="stylesheet">
+		<link href="css/style.css" rel="stylesheet">
+	</head>
+<!-- BODY -->
+
+	<body id="wrapper">
+	
+		<section id="landing">
+			<section class="logo">
+				<a href="#"><img src="images/logo-white.png"></a>
+			</section>
+			<h1>Shake!</h1>
+			<h3>The most convenient way yet.</h3>
+			<section class="col-half center" style="height:100px; width:256px;">
+				<a href="#" class="mui-btn"><i class="fa fa-apple" style="padding-right: 5px;"></i> Only on the App Store</a>
+			</section>
+			<p class="credit">
+				In attempt to create affinity between humans & computers.
+			</p>
+			<p class="credit" style="font-size:1em;">
+				An iOS app by <a href="http://www.jackkasbeer.co">Jack Kasbeer</a> & <a href="#">Tony Padilla</a>
+			</p>
+		</section> 
+		<!--Features section-->
+		<!-- <section class="full container"></section>
+		<section class="full container">Logo bar</section>
+		<section class="full container"></section> -->
+		
+		<!-- SCRIPTS 
+		========================================== -->
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<script src="js/javascript.js"></script>
+		<script type="text/javascript">
+      $(function() {
+        $('a[href*=#]:not([href=#])').click(function() {
+          if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+            var target = $(this.hash);
+            target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+            if (target.length) {
+              $('html,body').animate({
+                scrollTop: target.offset().top
+              }, 1000);
+              return false;
+            }
+          }
+        });
+      });
+    </script>
+
+	</body>
+</html>

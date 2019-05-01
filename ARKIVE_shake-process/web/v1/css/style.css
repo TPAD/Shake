@@ -1,0 +1,296 @@
+/*
+ * Globals
+ */
+
+/* FONT FACES 
+-------------------------------------------------- */
+@font-face {
+  font-family: 'MuseoSans_300';
+  src: url('../fonts/MuseoSans_300.woff') format('woff'), 
+       url('../fonts/MuseoSans_300.ttf')  format('truetype'),
+       url('../fonts/MuseoSans_300.otf')  format('opentype'),
+       url('../fonts/MuseoSans_300.svg#museo')  format('svg'); 
+}
+@font-face {
+  font-family: 'MuseoSans_100';
+  src: url('../fonts/MuseoSans_100.woff') format('woff'), 
+       url('../fonts/MuseoSans_100.ttf')  format('truetype'),
+       url('../fonts/MuseoSans_100.otf')  format('opentype'),
+       url('../fonts/MuseoSans_100.svg#museo')  format('svg');
+}
+ 
+
+/* Links */
+a,
+a:focus,
+a:hover {
+  color: #fff;
+}
+
+/* Custom default button */
+.btn-default,
+.btn-default:hover,
+.btn-default:focus {
+  color: #333;
+  text-shadow: none; /* Prevent inheritence from `body` */
+  background-color: #fff;
+  border: 1px solid #fff;
+}
+
+
+/*
+ * Base structure
+ */
+
+html,
+body {
+  height: 100%;
+  background-color: #CA545D;
+  font-family: "MuseoSans_300";
+}
+body {
+  color: #fff;
+  text-align: center;
+}
+
+.col-half {
+  position: relative;
+  width: 50%;
+  margin: 0;
+  float: left;
+}
+
+/* Extra markup and styles for table-esque vertical and horizontal centering */
+.site-wrapper {
+  position: fixed;
+  display: table;
+  width: 100%;
+  height: 100%; /* For at least Firefox */
+  min-height: 100%;
+  -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+          box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+}
+.site-wrapper-inner {
+  display: table-cell;
+  vertical-align: top;
+}
+.cover-container {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Padding for spacing */
+.inner {
+  padding: 30px;
+  padding-left: 0;
+}
+
+
+/*
+ * Header
+ */
+header {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  left: 33.33%;
+  width: 33.33%;
+  height: 100px;
+  margin: 0 auto;
+}
+header h3 {
+  font-family: "MuseoSans_100";
+  text-shadow: none;
+}
+.masthead {
+  width: 33.33%;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.brand {
+  margin: 0 auto;
+  margin-top: 45px;
+  margin-bottom: 40px;
+  font-size: 60px;
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+
+#henry {
+  position: absolute;
+  top: 130px;
+  right: -2%;
+}
+
+.masthead-nav > li {
+  display: inline-block;
+}
+.masthead-nav > li + li {
+  margin-left: 20px;
+}
+.masthead-nav > li > a {
+  padding-right: 0;
+  padding-left: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff; /* IE8 proofing */
+  color: rgba(255,255,255,.75);
+  border-bottom: 2px solid transparent;
+}
+.masthead-nav > li > a:hover,
+.masthead-nav > li > a:focus {
+  background-color: transparent;
+  border-bottom-color: #a9a9a9;
+  border-bottom-color: rgba(255,255,255,.25);
+}
+.masthead-nav > .active > a,
+.masthead-nav > .active > a:hover,
+.masthead-nav > .active > a:focus {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+
+@media (min-width: 768px) {
+  .masthead-nav {
+    float: right;
+  }
+}
+
+
+/*
+ * Cover
+ */
+
+.cover {
+  padding: 0 20px;
+}
+.cover .btn-lg {
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+/*
+ * MailChimp
+ */
+#signup {
+  position: relative;
+  bottom: 288px;
+  width: 273px;
+  margin: 0 auto;
+  margin-right: 43%;
+}
+#signup > h4 {
+  width: 400px;
+  text-align: left;
+  text-shadow: none;
+  font-family: "MuseoSans_100";
+}
+#signup > form {
+  position: relative !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+.mc-field-group {
+  float: left !important;
+  width: 95% !important;
+}
+.mc-field-group input {
+  display: inline-block !important;
+  width: 100% !important;
+  height: 32px !important;
+  padding: 4px 10px !important;
+  margin: 0 !important;
+  color: #00B691 !important;
+  font-family: "Helvetica Neue", "Helvetica", sans-serif !important;
+  font-size: 1.2em !important;
+  font-weight: 200 !important;
+}
+.mc-field-group input:focus {
+  outline-width: 1px;
+  outline-style: auto;
+  outline-color: #00B691;
+  border-color: #00B691 !important;
+}
+#signup_scroll > div:last-of-type {
+  display: inline-block;
+  float: right;
+}
+#signup_scroll > div:last-of-type span {
+  position: absolute;
+  z-index: 2;
+  float: right;
+}
+#signup_scroll > div:last-of-type span:hover { cursor: pointer; }
+#signup_scroll > div:last-of-type i {
+  color: white;
+  text-align: center;
+  margin: 12px 0 0 -7px;
+}
+#signup #mc-embedded-subscribe {
+  float: right;
+  position: absolute;
+  z-index: 1;
+  display: inline-block !important;
+  margin: 0 !important;
+  width: 88px !important;
+  height: 42px !important;
+  padding: 0 8px !important;
+  background-color: #00B691;
+  border: solid 1px #00B3A6 !important;
+  border-top-right-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+}
+#signup #mc-embedded-subscribe:hover { border-bottom-width: 3px; }
+
+/*
+ * Footer
+ */
+
+.mastfoot {
+  position: absolute;
+  bottom: 0;
+  color: #999; /* IE8 proofing */
+  color: rgba(255,255,255,.5);
+}
+.mastfoot .inner > div {
+  position: relative;
+  width: 340px;
+  height: 55px;
+  margin: 0 auto;
+  text-align: center;
+}
+.mastfoot .inner > div span { display: block; color: #656565; font-size: 0.8em; }
+.mastfoot .inner > div span:first-of-type { padding-top: 10px; padding-bottom: 5px; }
+.mastfoot .inner > div span a { color: rgba(228,95,71,0.5); }
+.mastfoot .inner > div span a:hover { color: rgba(228,95,71,0.7); }
+.mastfoot .inner > a {
+  position: absolute;
+  bottom: 16px;
+  right: 26px;
+}
+
+
+/*
+ * Affix and center
+ */
+
+@media (min-width: 768px) {
+  /* Pull out the header and footer */
+  /*.masthead {
+    position: absolute;
+    top: 0;
+  }
+  .mastfoot {
+    position: absolute;
+    bottom: 0;
+  }*/
+  /* Start the vertical centering */
+  .site-wrapper-inner {
+    vertical-align: middle;
+  }
+  /* Handle the widths */
+  .mastfoot,
+  .cover-container {
+    width: 100%; /* Must be percentage or pixels for horizontal alignment */
+  }
+}
