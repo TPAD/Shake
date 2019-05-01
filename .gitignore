@@ -14,5 +14,8 @@ profile
 *.moved-aside
 DerivedData
 .idea/
+<<<<<<< HEAD
 # Pods
 
+=======
+>>>>>>> 8ebda1cb14dc967d88d7f0f243c65e268631abf2
