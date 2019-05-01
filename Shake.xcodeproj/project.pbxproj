@@ -34,8 +34,6 @@
 		349BB13B1DB191F80070695E /* SanFranciscoText-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 349BB1261DB191F80070695E /* SanFranciscoText-RegularItalic.otf */; };
 		349BB13C1DB191F80070695E /* SanFranciscoText-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 349BB1271DB191F80070695E /* SanFranciscoText-Semibold.otf */; };
 		349BB13D1DB191F80070695E /* SanFranciscoText-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 349BB1281DB191F80070695E /* SanFranciscoText-SemiboldItalic.otf */; };
-		34D83D821DC289C8005A3EFC /* TypePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34D83D811DC289C8005A3EFC /* TypePicker.xib */; };
-		34D83D841DC28B4A005A3EFC /* TypePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D83D831DC28B4A005A3EFC /* TypePicker.swift */; };
 		E72B55321CFD749B000CD07E /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72B55311CFD749B000CD07E /* Reachability.swift */; };
 		E75034941CFBA18A003F5625 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75034931CFBA18A003F5625 /* Helper.swift */; };
 		E75034961CFBAFC3003F5625 /* DestinationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75034951CFBAFC3003F5625 /* DestinationViewController.swift */; };
@@ -75,8 +73,6 @@
 		349BB1261DB191F80070695E /* SanFranciscoText-RegularItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SanFranciscoText-RegularItalic.otf"; path = "Shake/SanFranciscoFont-master/SanFranciscoText-RegularItalic.otf"; sourceTree = "<group>"; };
 		349BB1271DB191F80070695E /* SanFranciscoText-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SanFranciscoText-Semibold.otf"; path = "Shake/SanFranciscoFont-master/SanFranciscoText-Semibold.otf"; sourceTree = "<group>"; };
 		349BB1281DB191F80070695E /* SanFranciscoText-SemiboldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SanFranciscoText-SemiboldItalic.otf"; path = "Shake/SanFranciscoFont-master/SanFranciscoText-SemiboldItalic.otf"; sourceTree = "<group>"; };
-		34D83D811DC289C8005A3EFC /* TypePicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TypePicker.xib; sourceTree = "<group>"; };
-		34D83D831DC28B4A005A3EFC /* TypePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypePicker.swift; sourceTree = "<group>"; };
 		58AD71C10A886FCA1ED3E2C1 /* Pods-Shake.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shake.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Shake/Pods-Shake.debug.xcconfig"; sourceTree = "<group>"; };
 		AFF043A7DFB50B25B140AED8 /* Pods_Shake.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Shake.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E72B55311CFD749B000CD07E /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
@@ -182,12 +178,10 @@
 				E75034931CFBA18A003F5625 /* Helper.swift */,
 				E72B55311CFD749B000CD07E /* Reachability.swift */,
 				E7A843181D0CE6AA0061C535 /* LocationView.swift */,
-				34D83D831DC28B4A005A3EFC /* TypePicker.swift */,
 				342119741DC52C8900683982 /* DetailView.swift */,
 				E7F7CEAE1CFB8EAA00BA7F1D /* LaunchScreen.storyboard */,
 				E7F7CEA61CFB8EAA00BA7F1D /* Main.storyboard */,
 				3484E0D71D9C49C100038F25 /* GPlace.xib */,
-				34D83D811DC289C8005A3EFC /* TypePicker.xib */,
 				E7F7CEAC1CFB8EAA00BA7F1D /* Assets.xcassets */,
 				E7F7CEB11CFB8EAA00BA7F1D /* Info.plist */,
 				E7F7CEA91CFB8EAA00BA7F1D /* Shake.xcdatamodeld */,
@@ -225,12 +219,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Tony Padilla";
 				TargetAttributes = {
 					E7F7CE9E1CFB8EAA00BA7F1D = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = LXQPWHDUGR;
+						DevelopmentTeam = A2N9APJ4GT;
 						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
 					};
@@ -238,7 +232,7 @@
 			};
 			buildConfigurationList = E7F7CE9A1CFB8EAA00BA7F1D /* Build configuration list for PBXProject "Shake" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -282,7 +276,6 @@
 				349BB13D1DB191F80070695E /* SanFranciscoText-SemiboldItalic.otf in Resources */,
 				E7F7CEB01CFB8EAA00BA7F1D /* LaunchScreen.storyboard in Resources */,
 				E7F7CEAD1CFB8EAA00BA7F1D /* Assets.xcassets in Resources */,
-				34D83D821DC289C8005A3EFC /* TypePicker.xib in Resources */,
 				E7F7CEA81CFB8EAA00BA7F1D /* Main.storyboard in Resources */,
 				3484E0D81D9C49C100038F25 /* GPlace.xib in Resources */,
 				349BB1131DB191DD0070695E /* SanFranciscoFont-master in Resources */,
@@ -348,7 +341,6 @@
 				3459C2131E346DC2001DCDEC /* GoogleSearch.swift in Sources */,
 				342119751DC52C8900683982 /* DetailView.swift in Sources */,
 				E7A843191D0CE6AA0061C535 /* LocationView.swift in Sources */,
-				34D83D841DC28B4A005A3EFC /* TypePicker.swift in Sources */,
 				E7F7CEAB1CFB8EAA00BA7F1D /* Shake.xcdatamodeld in Sources */,
 				3484E0DA1D9DA7DF00038F25 /* CosmosDistrib.swift in Sources */,
 				E7F7CEA51CFB8EAA00BA7F1D /* ViewController.swift in Sources */,
@@ -384,19 +376,28 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -424,6 +425,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -432,19 +434,28 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -465,6 +476,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -479,17 +491,17 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = LXQPWHDUGR;
+				DEVELOPMENT_TEAM = A2N9APJ4GT;
 				INFOPLIST_FILE = Shake/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = come.shake.for.convenience;
+				PRODUCT_BUNDLE_IDENTIFIER = come.shake;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Shake/Shake-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -502,15 +514,15 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = LXQPWHDUGR;
+				DEVELOPMENT_TEAM = A2N9APJ4GT;
 				INFOPLIST_FILE = Shake/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = come.shake.for.convenience;
+				PRODUCT_BUNDLE_IDENTIFIER = come.shake;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Shake/Shake-Bridging-Header.h";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};

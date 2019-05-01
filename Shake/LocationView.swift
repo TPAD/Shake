@@ -66,10 +66,8 @@ class Location: UIView, DetailViewDataSource {
     var coordinates: (Double, Double)? {
         didSet {
             if coordinates != nil {
-                if let aD = appDelegate {
-                    aD.dest = CLLocationCoordinate2D(latitude: coordinates!.0,
-                                                     longitude: coordinates!.1)
-                }
+                appDelegate.dest = CLLocationCoordinate2D(latitude: coordinates!.0,
+                                                          longitude: coordinates!.1)
             }
         }
     }
@@ -221,13 +219,11 @@ class Location: UIView, DetailViewDataSource {
             if let ref_obj = photos[0] as? [String:AnyObject] {
                 if let ref = ref_obj["photo_reference"] as? String {
                     let width = Int(self.image.frame.width)
-                    var key: String?
-                    if appDelegate == nil { key = " "}
-                    else { key = appDelegate!.getApiKey() }
+                    let key: String = appDelegate.getApiKey()
                     let session = URLSession.shared
                     let params: Parameters = ["maxwidth":"\(width)",
                                               "photoreference":"\(ref)",
-                                              "key":"\(key!)"]
+                                              "key":"\(key)"]
                     var search = GoogleSearch(type: .PHOTO, parameters: params)
                     search.makeRequest(session, handler: responseHandler)
                     
@@ -374,7 +370,7 @@ class Location: UIView, DetailViewDataSource {
         layoutIfNeeded()
     }
     
-    func longTap(_ sender: UIGestureRecognizer?) {
+    @objc func longTap(_ sender: UIGestureRecognizer?) {
         delegate?.longPressAction(self, sender: sender)
     }
     
@@ -551,7 +547,7 @@ class DualView: UIView {
         lhs?.addSubview(lhs_icon!)
     }
     
-    func userHasTapped(_ sender: UIGestureRecognizer) {
+    @objc func userHasTapped(_ sender: UIGestureRecognizer) {
         let callFrame: CGRect = rhs!.frame
         let mapFrame: CGRect = lhs!.frame
         let tapPoint: CGPoint = sender.location(in: self)

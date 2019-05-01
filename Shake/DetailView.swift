@@ -250,11 +250,11 @@ class DetailView: UIView, UIScrollViewDelegate {
         datasource?.setRatingFor(detailView: self)
     }
     
-    func removeView(_ sender: UISwipeGestureRecognizer) {
+    @objc func removeView(_ sender: UISwipeGestureRecognizer) {
         delegate?.remove(detailView: self)
     }
     
-    func adjustScrollView(_ sender: UISwipeGestureRecognizer) {
+    @objc func adjustScrollView(_ sender: UISwipeGestureRecognizer) {
         DispatchQueue.main.async {
             UIView.animate(withDuration: 0.5, animations: {
                 let diff: CGFloat = self.svWidth - self.frame.width
@@ -361,7 +361,7 @@ class DetailView: UIView, UIScrollViewDelegate {
         isOpenView.addSubview(webIconLabel)
     }
     
-    func handleWebIconTapped(_ sender: UIButton) {
+    @objc func handleWebIconTapped(_ sender: UIButton) {
         delegate?.redirectToWeb()
     }
     
@@ -415,7 +415,7 @@ class DetailView: UIView, UIScrollViewDelegate {
         addressView.addSubview(addressIcon)
     }
     
-    func handleLocationIconTapped(_ sender: UIButton) {
+    @objc func handleLocationIconTapped(_ sender: UIButton) {
         delegate?.redirectToMaps()
     }
     
@@ -510,7 +510,7 @@ class DetailView: UIView, UIScrollViewDelegate {
         }
     }
     
-    func exColHoursAction(_ sender: UITapGestureRecognizer) {
+    @objc func exColHoursAction(_ sender: UITapGestureRecognizer) {
         scrollView.contentSize = CGSize(width: scrollView.frame.width,
                                         height: scrollView.frame.height)
         let resizeHeight: CGFloat?
@@ -596,7 +596,7 @@ class DetailView: UIView, UIScrollViewDelegate {
         callView.addSubview(callIcon)
     }
     
-    func handleCallIconTapped(_ sender: UIButton) {
+    @objc func handleCallIconTapped(_ sender: UIButton) {
         delegate?.redirectToCall()
     }
     
@@ -639,7 +639,7 @@ class DetailView: UIView, UIScrollViewDelegate {
         saveView.addSubview(saveIcon)
     }
     
-    func saveIconTapped(_ sender: UIButton) {
+    @objc func saveIconTapped(_ sender: UIButton) {
         delegate?.saveLocation()
     }
     
@@ -704,7 +704,7 @@ class DetailView: UIView, UIScrollViewDelegate {
         }
     }
     
-    func exColRevAction(_ sender: UITapGestureRecognizer) {
+    @objc func exColRevAction(_ sender: UITapGestureRecognizer) {
         expandRevNoAnimationActions()
         let requiredHeight = expandedReviewView.sumOfSubviewHeights() + 15
         DispatchQueue.main.async {

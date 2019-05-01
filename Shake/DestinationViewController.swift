@@ -198,11 +198,10 @@ class DestinationViewController: UIViewController,
      *  - parameter atIndex: index of results array to access for relevant info
      */
     private func retrieveJSON(atIndex: Int) {
-        if appDelegate == nil { return }
         if let res = results {
             if let id = res[atIndex]["place_id"] as? String {
                 let params: Parameters = ["placeid": "\(id)",
-                    "key": "\(appDelegate!.getApiKey())"]
+                    "key": "\(appDelegate.getApiKey())"]
                 let session = URLSession.shared
                 var search = GoogleSearch(type: .DETAIL, parameters: params)
                 search.makeRequest(session, handler: responseHandler)
@@ -297,12 +296,10 @@ class DestinationViewController: UIViewController,
                         locationView?.distanceFromLocation(userLocation!)
                     addressLabel?.text =
                         locationView?.address
-                    if let aD = appDelegate {
-                        if let coords = locationView!.coordinates {
-                            aD.dest =
-                                CLLocationCoordinate2D(latitude: coords.0,
-                                                       longitude: coords.1)
-                        }
+                    if let coords = locationView!.coordinates {
+                        appDelegate.dest =
+                            CLLocationCoordinate2D(latitude: coords.0,
+                                                   longitude: coords.1)
                     }
                     if locationView?.state == .pressed {
                         locationView?.longTap(nil)
@@ -321,14 +318,14 @@ class DestinationViewController: UIViewController,
     }
     
     // swipe gesture action for dismissing view controller  #SELECTOR
-    func unwindFromDetailVC(_ sender: UISwipeGestureRecognizer) {
+    @objc func unwindFromDetailVC(_ sender: UISwipeGestureRecognizer) {
         if !detailShouldDisplay {
             self.dismiss(animated: true, completion: nil)
         }
     }
     
     // manages the detail display #SELECTOR
-    func toggleDetail(_ sender: UIGestureRecognizer) {
+    @objc func toggleDetail(_ sender: UIGestureRecognizer) {
         if detailShouldDisplay == false {
             let bounds: CGRect = locationView!.frame
             let pointTapped: CGPoint = sender.location(in: view)
@@ -339,7 +336,7 @@ class DestinationViewController: UIViewController,
     }
     
     // This tap only exists when user has long pressed location #SELECTOR
-    func userHasTapped(_ sender: UIGestureRecognizer) {
+    @objc func userHasTapped(_ sender: UIGestureRecognizer) {
         let bounds: CGRect = locationView!.frame
         let pointTapped: CGPoint = sender.location(in: view)
         if !bounds.contains(pointTapped) {
@@ -351,15 +348,13 @@ class DestinationViewController: UIViewController,
     // notifies location manager that usr needs location updates
     // also accessed from app delegate when user re-enters app
     func locationManagerSetup() {
-        if let appDelegate = appDelegate {
-            if let manager = appDelegate.locationManager {
-                manager.desiredAccuracy = kCLLocationAccuracyBest
-                manager.distanceFilter = 10
-                manager.startUpdatingLocation()
-                if (CLLocationManager.headingAvailable()) {
-                    manager.startUpdatingHeading()
-                    manager.headingFilter = 20.0
-                }
+        if let manager = appDelegate.locationManager {
+            manager.desiredAccuracy = kCLLocationAccuracyBest
+            manager.distanceFilter = 10
+            manager.startUpdatingLocation()
+            if (CLLocationManager.headingAvailable()) {
+                manager.startUpdatingHeading()
+                manager.headingFilter = 20.0
             }
         }
     }
@@ -402,8 +397,8 @@ class DestinationViewController: UIViewController,
     }
     
     func haltLocationUpdates() {
-        appDelegate?.locationManager.stopUpdatingHeading()
-        appDelegate?.locationManager.stopUpdatingLocation()
+        appDelegate.locationManager.stopUpdatingHeading()
+        appDelegate.locationManager.stopUpdatingLocation()
     }
     
     // MARK: - DualViewDelegate

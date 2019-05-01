@@ -21,35 +21,30 @@ protocol ViewControllerDelegate: class {
  *
  */
 
-class ViewController: UIViewController, TypePickerDelegate {
+class ViewController: UIViewController {
     
     @IBOutlet weak var desiredLocation: UILabel!
     
     weak var delegate: ViewControllerDelegate?
     
-    var typePicker: TypePicker?
-    var results: Array<[String:NSObject]>?
+    var results = Array<[String:NSObject]>()
     var locationNames: [String?]?
     var readyToSegue: Bool = false
     var userCoord: CLLocationCoordinate2D?
     var qstring: String?
     
     var animateSplash: Bool = true
-
-    var exButton: UIButton?
+    
     // MARK: - Override Functions
     override func viewDidLoad() {
         super.viewDidLoad()
         desiredLocation.isUserInteractionEnabled = true
         
-        if let appDelegate = appDelegate {
-            let status = appDelegate.status as CLAuthorizationStatus
-            if status == .restricted || status == .denied {
-                Helper.requestPermission(self)
-            }
+        let status = appDelegate.status as CLAuthorizationStatus
+        if status == .restricted || status == .denied {
+            Helper.requestPermission(self)
         }
-        runQuery(string: "convenience_store")
-        initExpandButton()
+        runQuery()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,7 +58,7 @@ class ViewController: UIViewController, TypePickerDelegate {
     }
     
     // detects shake motion in real time
-    override func motionBegan(_ motion: UIEventSubtype, with event: UIEvent?) {
+    override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         super.motionBegan(motion, with: event)
         // make sure shake is only detected when the view is loaded
         if (self.isViewLoaded == true && self.view.window != nil) {
@@ -83,63 +78,6 @@ class ViewController: UIViewController, TypePickerDelegate {
             delegate?.transferDataFrom(viewController: self)
         }
     }
-    
-    func initExpandButton() {
-        let width: CGFloat = (0.15)*view.frame.width
-        let height: CGFloat = (0.6)*width
-        exButton = UIButton().then {
-            $0.frame.size.width = width
-            $0.frame.size.height = height
-            $0.center.x = view.center.x
-            $0.frame.origin.y = view.frame.height - height
-            $0.alpha = 0.8
-            $0.setImage(UIImage(named: "collapse-white"), for: .normal)
-            $0.addTarget(self, action: #selector(showLocationOptions(_:)),
-                         for: .touchUpInside)
-        }
-        view.addSubview(exButton!)
-    }
-    
-    /* Allows the user to select the type of place they would like to query */
-    func showLocationOptions(_ sender: AnyObject) {
-        if typePicker == nil {
-            let height: CGFloat =
-                desiredLocation.by(withOffset: 0) - view.by(withOffset: -60)
-            typePicker = TypePicker().then {
-                $0.frame.size.width = view.frame.width - 60
-                $0.frame.size.height = height
-                $0.center.x = view.frame.width/2
-                $0.frame.origin.y = view.by(withOffset: 0)
-                $0.alpha = 1
-            }
-            view.addSubview(typePicker!)
-            typePicker!.delegate = self
-            typePicker!.backgroundColor = UIColor.white
-            DispatchQueue.main.async {
-                let th = self.typePicker!.frame.height
-                UIView.animate(withDuration: 0.5, animations: {
-                    self.typePicker!.frame.origin.y -= th
-                    self.exButton!.frame.origin.y -= th
-                    self.exButton!.setImage(UIImage(named: "expand-white"),
-                                            for: .normal)
-                })
-            }
-        } else {
-            DispatchQueue.main.async {
-                let th = self.typePicker!.frame.height
-                UIView.animate(withDuration: 0.5, animations: {
-                    self.typePicker!.frame.origin.y += th
-                    self.exButton!.frame.origin.y += th
-                    self.exButton!.setImage(UIImage(named: "collapse-white"),
-                                            for: .normal)
-                }, completion: {
-                    _ in
-                    self.typePicker!.removeFromSuperview()
-                    self.typePicker = nil
-                })
-            }
-        }
-    }
 
     /* segue with button for testing purposes */
     func goToDetail(_ sender: AnyObject) {
@@ -150,11 +88,9 @@ class ViewController: UIViewController, TypePickerDelegate {
     
     // helps resolve internet connectivity issues when user leaves and returns to the app */
     func applicationWillEnterForeground(_ notification: Notification) {
-        if let appDelegate = appDelegate {
-            let status = appDelegate.status
-            if status == .restricted || status == .denied {
-                Helper.relaunchAppAlert(self)
-            }
+        let status = appDelegate.status
+        if status == .restricted || status == .denied {
+            Helper.relaunchAppAlert(self)
         }
         if !Reachability.isConnected() {
             self.view.offlineViewDisappear()
@@ -171,22 +107,19 @@ class ViewController: UIViewController, TypePickerDelegate {
         }
     }
     
-    func runQuery(string: String) {
-        if let appDelegate = appDelegate {
-            if let manager = appDelegate.locationManager {
-                if let location = manager.location {
-                    let session = URLSession.shared
-                    let coord = location.coordinate
-                    let lat: String = "\(coord.latitude)"
-                    let lng: String = "\(coord.longitude)"
-                    let params: Parameters = ["location":"\(lat),\(lng)",
-                                              "rankby":"distance",
-                                              "type":"restaurant",
-                                              "key":"\(appDelegate.getApiKey())"]
-                    var search = GoogleSearch(type: .NEARBY, parameters: params)
-                    search.makeRequest(session, handler: responseHandler)
-                }
-            }
+    func runQuery() {
+        if let location = appDelegate.locationManager.location {
+            let session = URLSession.shared
+            let coord = location.coordinate
+            let lat: String = "\(coord.latitude)"
+            let lng: String = "\(coord.longitude)"
+            let gasParams: Parameters = ["location":"\(lat),\(lng)",
+                "rankby":"distance",
+                "type":"gas_station",
+                "key":"\(appDelegate.getApiKey())"]
+            
+            var searchGas = GoogleSearch(type: .NEARBY, parameters: gasParams)
+            searchGas.makeRequest(session, handler: responseHandler)
         }
     }
     
@@ -204,15 +137,15 @@ class ViewController: UIViewController, TypePickerDelegate {
                 let status: String? = json["status"] as? String
                 if status != nil && status! == "OK" {
                     let res = json["results"]! as! Array<[String: NSObject]>
-                    self.results = res
+                    for location in res {
+                        self.results.append(location)
+                    }
                     self.locationNames = res.map({($0["name"] as? String)})
-                    if let appDelegate = appDelegate {
-                        if let manager = appDelegate.locationManager {
-                            if let location = manager.location {
-                                self.userCoord = location.coordinate
-                            }
-                            manager.stopUpdatingLocation()
+                    if let manager = appDelegate.locationManager {
+                        if let location = manager.location {
+                            self.userCoord = location.coordinate
                         }
+                        manager.stopUpdatingLocation()
                     }
                     if !Reachability.isConnected() { return }
                     readyToSegue = true
@@ -225,21 +158,6 @@ class ViewController: UIViewController, TypePickerDelegate {
             }
         } else {
             Helper.invalidResponseError(self)
-        }
-    }
-    
-    /*  MARK:- TypePickerDelegate method */
-    
-    /*  lets the user know which location type they have chosen
-     *  starts a new query once user selects a new location
-     */
-    func setDesiredLocation(using: TypePicker) {
-        let location = using.chosen
-        if let result = location?.replacingOccurrences(of: "_", with: " ") {
-            desiredLocation.text = result
-        }
-        if let query = location {
-            runQuery(string: query)
         }
     }
 }
@@ -260,7 +178,6 @@ extension ViewController {
         }
         mainView.addSubview(logo)
         self.view.addSubview(mainView)
-        //runQuery(string: "convenience_store")
         initialLoadAnimation(mainView, image: logo)
     }
     
@@ -272,7 +189,7 @@ extension ViewController {
         let popTime: DispatchTime = DispatchTime.now() + Double(delayInSeconds) / Double(NSEC_PER_SEC)
         
         DispatchQueue.main.asyncAfter(deadline: popTime, execute: {
-            UIView.animate(withDuration: 0.80, delay: 0.05, options: UIViewAnimationOptions(), animations: {
+            UIView.animate(withDuration: 0.80, delay: 0.05, options: UIView.AnimationOptions(), animations: {
                 image.center.y -= (view.frame.height)
                 }, completion: {
                     _ -> Void in
@@ -283,7 +200,7 @@ extension ViewController {
     
     func fadeOut(_ view: UIView) {
         UIView.animate(withDuration: 0.5, delay: 0,
-                       options: UIViewAnimationOptions(), animations: {
+                       options: UIView.AnimationOptions(), animations: {
             view.alpha = 0
             }, completion: {
             (completed) in

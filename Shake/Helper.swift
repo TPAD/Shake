@@ -18,8 +18,8 @@ public let weekdays: [String] = ["Monday:", "Tuesday:", "Wednesday:",
                        "Thursday:", "Friday:", "Saturday:", "Sunday:"]
 
 // global appDelegate reference is a little suspect
-internal var appDelegate: AppDelegate? =
-    UIApplication.shared.delegate as? AppDelegate
+internal var appDelegate: AppDelegate =
+    UIApplication.shared.delegate as! AppDelegate
 
 /*
  *  MARK: - struct LocationTypes
@@ -275,8 +275,7 @@ public struct Helper {
     // Returns the day of the week (range: 1-7)
     static func dayOfWeek() -> Int {
         let date = NSDate()
-        let calendar: NSCalendar =
-            NSCalendar.current as NSCalendar
+        let calendar: NSCalendar = NSCalendar.current as NSCalendar
         let components: NSDateComponents =
             calendar.components(.weekday, from: date as Date)
                 as NSDateComponents
@@ -285,8 +284,8 @@ public struct Helper {
     
     /* navigate out of app to google maps */
     static func redirectToGoogleMaps(destination: String) {
-        if appDelegate?.locationManager?.location == nil { return }
-        let location = appDelegate!.locationManager!.location
+        if appDelegate.locationManager?.location == nil { return }
+        let location = appDelegate.locationManager!.location
         let coord = location?.coordinate
         if coord == nil { return }
         GMSGeocoder().reverseGeocodeCoordinate(coord!) {
