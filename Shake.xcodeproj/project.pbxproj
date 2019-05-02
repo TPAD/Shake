@@ -186,7 +186,6 @@
 				79A56A4E45A3A0F512183A04 /* Pods-Shake.debug.xcconfig */,
 				D88272DB99FB25B0FD6AF499 /* Pods-Shake.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};

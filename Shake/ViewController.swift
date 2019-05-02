@@ -136,6 +136,7 @@ class ViewController: UIViewController {
                                                  options: .mutableContainers)
                     as! NSDictionary
                 let status: String? = json["status"] as? String
+
                 if status != nil && status! == "OK" {
                     let res = json["results"]! as! Array<[String: NSObject]>
                     print(res)
@@ -153,7 +154,9 @@ class ViewController: UIViewController {
                     readyToSegue = true
                     print("done")
                 } else {
-                    Helper.alertOnBadResponse(status: "\(status)", host: self)
+                    DispatchQueue.main.sync {
+                        Helper.alertOnBadResponse(status: "\(status)", host: self)
+                    }
                 }
             } catch {
                 Helper.jsonConversionError(self)

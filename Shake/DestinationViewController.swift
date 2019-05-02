@@ -251,6 +251,8 @@ class DestinationViewController: UIViewController,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // set background image
+        assignbackground()
         // intialize locationView object
         let width: CGFloat = (0.85)*view.frame.width
         let y: CGFloat = (0.15)*self.view.bounds.height
@@ -275,6 +277,24 @@ class DestinationViewController: UIViewController,
         swipe.direction = .right
         view.addGestureRecognizer(swipe)
     }
+    
+    // Helper function for inserting image into view controller above
+    func assignbackground(){
+        let background = UIImage(named: "CFBackground.png")
+        
+        var imageView : UIImageView!
+        imageView = UIImageView(frame: view.bounds)
+        imageView.contentMode =  UIViewContentMode.scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.image = background
+        imageView.center = view.center
+        
+        view.addSubview(imageView)
+        
+        self.view.sendSubview(toBack: imageView)
+    }
+    
+
     
     /* Detects shake */
     override func motionBegan(_ motion: UIEventSubtype, with event: UIEvent?) {
