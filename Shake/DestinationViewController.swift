@@ -252,7 +252,6 @@ class DestinationViewController: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         // set background image
-        assignbackground()
         // intialize locationView object
         let width: CGFloat = (0.85)*view.frame.width
         let y: CGFloat = (0.15)*self.view.bounds.height
@@ -278,31 +277,10 @@ class DestinationViewController: UIViewController,
         view.addGestureRecognizer(swipe)
     }
     
-<<<<<<< HEAD
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
-    
-=======
-    // Helper function for inserting image into view controller above
-    func assignbackground(){
-        let background = UIImage(named: "CFBackground.png")
-        
-        var imageView : UIImageView!
-        imageView = UIImageView(frame: view.bounds)
-        imageView.contentMode =  UIViewContentMode.scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.image = background
-        imageView.center = view.center
-        
-        view.addSubview(imageView)
-        
-        self.view.sendSubview(toBack: imageView)
-    }
-    
 
-    
->>>>>>> 060aa15ae6453a19dbc0deb38c357ffb82a813a5
     /* Detects shake */
     override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         // requires that the view is loaded
