@@ -51,6 +51,7 @@
 		3459C2121E346DC2001DCDEC /* GoogleSearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoogleSearch.swift; sourceTree = "<group>"; };
 		3484E0D71D9C49C100038F25 /* GPlace.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GPlace.xib; sourceTree = "<group>"; };
 		3484E0D91D9DA7DF00038F25 /* CosmosDistrib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CosmosDistrib.swift; sourceTree = "<group>"; };
+		3485C2DB228271AC00FB5910 /* belmont.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = belmont.gpx; sourceTree = "<group>"; };
 		349BB1121DB191DD0070695E /* SanFranciscoFont-master */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "SanFranciscoFont-master"; path = "Shake/SanFranciscoFont-master"; sourceTree = "<group>"; };
 		349BB1141DB191F80070695E /* SanFranciscoDisplay-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SanFranciscoDisplay-Black.otf"; path = "Shake/SanFranciscoFont-master/SanFranciscoDisplay-Black.otf"; sourceTree = "<group>"; };
 		349BB1151DB191F80070695E /* SanFranciscoDisplay-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SanFranciscoDisplay-Bold.otf"; path = "Shake/SanFranciscoFont-master/SanFranciscoDisplay-Bold.otf"; sourceTree = "<group>"; };
@@ -155,6 +156,7 @@
 			children = (
 				E7F7CEA21CFB8EAA00BA7F1D /* AppDelegate.swift */,
 				E7F7CEA41CFB8EAA00BA7F1D /* ViewController.swift */,
+				3485C2DB228271AC00FB5910 /* belmont.gpx */,
 				E75034951CFBAFC3003F5625 /* DestinationViewController.swift */,
 				3459C2121E346DC2001DCDEC /* GoogleSearch.swift */,
 				3484E0D91D9DA7DF00038F25 /* CosmosDistrib.swift */,
@@ -186,7 +188,6 @@
 				79A56A4E45A3A0F512183A04 /* Pods-Shake.debug.xcconfig */,
 				D88272DB99FB25B0FD6AF499 /* Pods-Shake.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -225,7 +226,7 @@
 					E7F7CE9E1CFB8EAA00BA7F1D = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = A2N9APJ4GT;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -500,7 +501,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Shake/Shake-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -521,7 +522,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Shake/Shake-Bridging-Header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

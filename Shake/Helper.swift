@@ -101,6 +101,16 @@ public struct Colors {
         return UIColor(red: 194/255.0, green: 70/255.0,
                        blue: 68/255.0, alpha: 1.0)
     }
+    
+    static var pearlBlack: UIColor {
+        return UIColor(red: 12/255.0, green: 18/255.0,
+                       blue: 19/255.0, alpha: 1.0)
+    }
+    
+    static var CFOrange: UIColor {
+        return UIColor(red: 249/255.0, green: 177/255.0,
+                       blue: 98/255.0, alpha: 1.0)
+    }
 }
 
 /*
@@ -153,7 +163,7 @@ public struct AlertActions {
     
     // allows the user to navigate to their settings
     private static func openSettingsIfPossible(action: (UIAlertAction)?) {
-        let settingsUrl = URL(string: UIApplicationOpenSettingsURLString)
+        let settingsUrl = URL(string: UIApplication.openSettingsURLString)
         if let url = settingsUrl {
             // not sure why this is necessary (crashed otherwise)
             DispatchQueue.main.asyncAfter(deadline: DispatchTime(
@@ -208,7 +218,7 @@ public struct Helper {
     static func initAlertContoller(title: String, message: String,
                                    host: UIViewController,
                                    actions: [UIAlertAction],
-                                   style: UIAlertControllerStyle,
+                                   style: UIAlertController.Style,
                                    completion: (() -> Void)?) {
         let alertController = UIAlertController(title: title,
                                                 message: message,
@@ -284,8 +294,7 @@ public struct Helper {
     
     /* navigate out of app to google maps */
     static func redirectToGoogleMaps(destination: String) {
-        if appDelegate.locationManager?.location == nil { return }
-        let location = appDelegate.locationManager!.location
+        let location = appDelegate.locationManager.location
         let coord = location?.coordinate
         if coord == nil { return }
         GMSGeocoder().reverseGeocodeCoordinate(coord!) {
@@ -330,7 +339,7 @@ public struct Helper {
     
     static func redirectToSafari(website: String) {
         if let url = URL(string: website) {
-            UIApplication.shared.open(url, options: ["":""],
+            UIApplication.shared.open(url, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary(["":""]),
                                       completionHandler: nil)
         } else {
             //MARK: - TODO raise error
@@ -343,8 +352,8 @@ public extension UIView {
     
     func rotationAnimation() {
         let animation = CABasicAnimation(keyPath: "transform.rotation")
-        animation.fromValue = CGFloat(M_PI*(-0.05))
-        animation.toValue = CGFloat(M_PI*(0.05))
+        animation.fromValue = CGFloat(.pi*(-0.05))
+        animation.toValue = CGFloat(.pi*(0.05))
         animation.autoreverses = true
         animation.repeatCount = 7
         animation.duration = 0.075
@@ -396,11 +405,11 @@ public extension UIView {
     func pushTransition(duration:CFTimeInterval) {
         let animation:CATransition = CATransition()
         animation.timingFunction = CAMediaTimingFunction(name:
-            kCAMediaTimingFunctionEaseInEaseOut)
-        animation.type = kCATransitionPush
-        animation.subtype = kCATransitionFromLeft
+            CAMediaTimingFunctionName.easeInEaseOut)
+        animation.type = CATransitionType.push
+        animation.subtype = CATransitionSubtype.fromLeft
         animation.duration = duration
-        self.layer.add(animation, forKey: kCATransitionPush)
+        self.layer.add(animation, forKey: convertFromCATransitionType(CATransitionType.push))
     }
     
     /* get y at the base of a view frame with an offset */
@@ -474,8 +483,8 @@ public extension String {
     }
     
     func capitalizingFirstLetter() -> String {
-        let first = String(characters.prefix(1)).capitalized
-        let other = String(characters.dropFirst())
+        let first = String(prefix(1)).capitalized
+        let other = String(dropFirst())
         return first + other
     }
     
@@ -529,10 +538,10 @@ extension CGFloat: DoubleConvertible { var double: Double { return Double(self) 
 
 extension DoubleConvertible {
     var degreesToRadians: DoubleConvertible {
-        return Self(double * M_PI / 180)
+        return Self(double * .pi / 180)
     }
     var radiansToDegrees: DoubleConvertible {
-        return Self(double * 180 / M_PI)
+        return Self(double * 180 / .pi)
     }
 }
 
@@ -550,4 +559,14 @@ extension ReviewsContainerView {
         }
         return result
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromCATransitionType(_ input: CATransitionType) -> String {
+	return input.rawValue
 }

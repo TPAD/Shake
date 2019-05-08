@@ -285,7 +285,7 @@ class Location: UIView, DetailViewDataSource {
             let fadd = rawData!["formatted_address"] as? String {
             formatAddress = fadd
             var temp: String = ""
-            for char in data.characters {
+            for char in data {
                 if (char == ",") { break }
                 temp.append(char)
             }
@@ -401,7 +401,6 @@ class Location: UIView, DetailViewDataSource {
             detailView.hoursAvailable = true
             detailView.hoursArray = arr
             let i = Helper.dayOfWeek() - 1
-            print("day of week is \(i)")
             let day = weekdays[i]
             var string = arr[i].replacingOccurrences(of: day, with: "")
             // CASE location open 24 hours

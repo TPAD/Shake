@@ -276,8 +276,12 @@ class DestinationViewController: UIViewController,
         view.addGestureRecognizer(swipe)
     }
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     /* Detects shake */
-    override func motionBegan(_ motion: UIEventSubtype, with event: UIEvent?) {
+    override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         // requires that the view is loaded
         if (self.isViewLoaded == true && self.view.window != nil) {
             if let motion = event {
@@ -348,14 +352,13 @@ class DestinationViewController: UIViewController,
     // notifies location manager that usr needs location updates
     // also accessed from app delegate when user re-enters app
     func locationManagerSetup() {
-        if let manager = appDelegate.locationManager {
-            manager.desiredAccuracy = kCLLocationAccuracyBest
-            manager.distanceFilter = 10
-            manager.startUpdatingLocation()
-            if (CLLocationManager.headingAvailable()) {
-                manager.startUpdatingHeading()
-                manager.headingFilter = 20.0
-            }
+        let manager = appDelegate.locationManager
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.distanceFilter = 10
+        manager.startUpdatingLocation()
+        if (CLLocationManager.headingAvailable()) {
+            manager.startUpdatingHeading()
+            manager.headingFilter = 20.0
         }
     }
     

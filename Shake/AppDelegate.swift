@@ -15,7 +15,7 @@ import GoogleMaps
 class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
 
     var window: UIWindow?
-    var locationManager: CLLocationManager!
+    var locationManager: CLLocationManager = CLLocationManager()
     var status = CLLocationManager.authorizationStatus()
     var userCoord: CLLocationCoordinate2D?
     var dest: CLLocationCoordinate2D?
@@ -33,10 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
      *
      */
     func locationGetterSetup() {
-        if status != .restricted && status != .denied {
-            self.locationManager = CLLocationManager()
-            self.locationManager.requestWhenInUseAuthorization()
-        }
+        self.locationManager.requestWhenInUseAuthorization()
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.distanceFilter = 20.0
@@ -86,7 +83,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                     // match compass rotation to the angle calculated angle
                     UIView.animate(withDuration: 0.4, animations: {
                         destinationVC.compass!.transform =
-                            CGAffineTransform(rotationAngle: CGFloat((deg - h) * M_PI/180))
+                            CGAffineTransform(rotationAngle: CGFloat((deg - h) * .pi/180))
                     })
                     let dest: CLLocation = CLLocation(latitude: destination.latitude,
                     longitude: destination.longitude)
@@ -136,6 +133,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         print("did become active")
+        //print(UIApplication.shared.keyWindow)
+        let delayInSeconds: Int64  = 800000000
+        let popTime: DispatchTime =
+            DispatchTime.now() + Double(delayInSeconds) / Double(NSEC_PER_SEC)
+        DispatchQueue.main.asyncAfter(deadline: popTime, execute: {
+            if self.locationManager.location != nil {
+                if let VC = UIApplication.shared.topMostViewController() as?
+                    Shake.ViewController {
+                    VC.runQuery()
+                }
+            }
+        })
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -151,3 +160,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
 
 
+extension UIViewController {
+    func topMostViewController() -> UIViewController {
+        
+        if let presented = self.presentedViewController {
+            return presented.topMostViewController()
+        }
+        
+        if let navigation = self as? UINavigationController {
+            return navigation.visibleViewController?.topMostViewController() ?? navigation
+        }
+        
+        if let tab = self as? UITabBarController {
+            return tab.selectedViewController?.topMostViewController() ?? tab
+        }
+        
+        return self
+    }
+}
+
+extension UIApplication {
+    func topMostViewController() -> UIViewController? {
+        return self.keyWindow?.rootViewController?.topMostViewController()
+    }
+}

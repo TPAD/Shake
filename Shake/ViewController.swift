@@ -23,51 +23,29 @@ protocol ViewControllerDelegate: class {
 
 class ViewController: UIViewController {
     
-    @IBOutlet weak var desiredLocation: UILabel!
-    
+    @IBOutlet weak var shakeIcon: UIImageView!
     weak var delegate: ViewControllerDelegate?
-    
+
     var results = Array<[String:NSObject]>()
     var locationNames: [String?]?
-    var readyToSegue: Bool = false
     var userCoord: CLLocationCoordinate2D?
     var qstring: String?
-    
     var animateSplash: Bool = true
     
     // MARK: - Override Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        desiredLocation.isUserInteractionEnabled = true
-        
-        let status = appDelegate.status as CLAuthorizationStatus
-        if status == .restricted || status == .denied {
-            Helper.requestPermission(self)
-        }
-        runQuery()
+        shakeIcon.rotationAnimation()
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if !Reachability.isConnected() {
             self.view.offlineViewAppear()
-        }
-        if animateSplash {
-            initialLoadView()
-        }
-    }
-    
-    // detects shake motion in real time
-    override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        super.motionBegan(motion, with: event)
-        // make sure shake is only detected when the view is loaded
-        if (self.isViewLoaded == true && self.view.window != nil) {
-            if let motion = event {
-                // make sure data necessary is retrieved before segue
-                if motion.subtype == .motionShake && readyToSegue {
-                    self.goToDetail(self)
-                }
-            }
         }
     }
     
@@ -80,8 +58,8 @@ class ViewController: UIViewController {
     }
 
     /* segue with button for testing purposes */
-    func goToDetail(_ sender: AnyObject) {
-        if readyToSegue {
+    private func goToDetail(_ sender: AnyObject) {
+        DispatchQueue.main.async {
             self.performSegue(withIdentifier: "toDetail", sender: sender)
         }
     }
@@ -100,13 +78,6 @@ class ViewController: UIViewController {
         }
     }
     
-    // segue performed with the test button
-    @IBAction func testSegue(_ sender: AnyObject) {
-        if readyToSegue {
-            self.performSegue(withIdentifier: "toDetail", sender: self)
-        }
-    }
-    
     func runQuery() {
         if let location = appDelegate.locationManager.location {
             let session = URLSession.shared
@@ -121,6 +92,10 @@ class ViewController: UIViewController {
             
             var searchGas = GoogleSearch(type: .NEARBY, parameters: gasParams)
             searchGas.makeRequest(session, handler: responseHandler)
+        } else {
+            DispatchQueue.main.async {
+                Helper.alertOnBadResponse(status: "location is nil", host: self)
+            }
         }
     }
     
@@ -138,22 +113,23 @@ class ViewController: UIViewController {
                 let status: String? = json["status"] as? String
                 if status != nil && status! == "OK" {
                     let res = json["results"]! as! Array<[String: NSObject]>
-                    print(res)
                     for location in res {
                         self.results.append(location)
                     }
                     self.locationNames = res.map({($0["name"] as? String)})
-                    if let manager = appDelegate.locationManager {
-                        if let location = manager.location {
-                            self.userCoord = location.coordinate
-                        }
-                        manager.stopUpdatingLocation()
+                    let manager = appDelegate.locationManager
+                    if let location = manager.location {
+                        self.userCoord = location.coordinate
                     }
-                    if !Reachability.isConnected() { return }
-                    readyToSegue = true
+                    manager.stopUpdatingLocation()
+                    //if !Reachability.isConnected() { return }
                     print("done")
-                } else {
-                    Helper.alertOnBadResponse(status: "\(status)", host: self)
+                    self.goToDetail(self)
+                } else if status != nil {
+                    DispatchQueue.main.sync {
+                        Helper
+                            .alertOnBadResponse(status: "\(status!)", host: self)
+                    }
                 }
             } catch {
                 Helper.jsonConversionError(self)
@@ -163,60 +139,3 @@ class ViewController: UIViewController {
         }
     }
 }
-
-//MARK: - Initial Load Animation
-
-extension ViewController {
-    
-    func initialLoadView() {
-        let mainView = UIView(frame: self.view.frame).then {
-            $0.backgroundColor = UIColor.white
-        }
-        let logo = UIImageView().then {
-            $0.frame.size.width =  0.35*(mainView.frame.width)
-            $0.frame.size.height = 0.35*(mainView.frame.width)
-            $0.center = mainView.center
-            $0.image = UIImage(named: "Shake-icon-inverse")
-        }
-        mainView.addSubview(logo)
-        self.view.addSubview(mainView)
-        initialLoadAnimation(mainView, image: logo)
-    }
-    
-    func initialLoadAnimation(_ view: UIView, image: UIImageView) {
-        image.rotationAnimation()
-        
-        let delayInSeconds: Int64  = 800000000
-        
-        let popTime: DispatchTime = DispatchTime.now() + Double(delayInSeconds) / Double(NSEC_PER_SEC)
-        
-        DispatchQueue.main.asyncAfter(deadline: popTime, execute: {
-            UIView.animate(withDuration: 0.80, delay: 0.05, options: UIView.AnimationOptions(), animations: {
-                image.center.y -= (view.frame.height)
-                }, completion: {
-                    _ -> Void in
-                    self.fadeOut(view)
-            })
-        });
-    }
-    
-    func fadeOut(_ view: UIView) {
-        UIView.animate(withDuration: 0.5, delay: 0,
-                       options: UIView.AnimationOptions(), animations: {
-            view.alpha = 0
-            }, completion: {
-            (completed) in
-                if completed { view.removeFromSuperview() }
-        })
-        
-    }
-}
-
-
-
-
-
-
-
-
-
