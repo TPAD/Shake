@@ -84,7 +84,8 @@ class ViewController: UIViewController {
             let coord = location.coordinate
             let lat: String = "\(coord.latitude)"
             let lng: String = "\(coord.longitude)"
-            let gasParams: Parameters = ["location":"\(lat),\(lng)",
+            let gasParams: Parameters = [
+                "location":"\(lat),\(lng)",
                 "name":"CoinFlip",
                 "rankby":"distance",
                 "type":"atm",

@@ -8,5 +8,6 @@ pod "RealmSwift"
 
 target 'Shake' do
     pod 'GoogleMaps'
+    pod 'RealmSwift'
 
 end

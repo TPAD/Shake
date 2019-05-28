@@ -89,6 +89,7 @@
 		E7F7CEAC1CFB8EAA00BA7F1D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E7F7CEAF1CFB8EAA00BA7F1D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E7F7CEB11CFB8EAA00BA7F1D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F8D90806229CEC9D00C68DE9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				E7F7CEA21CFB8EAA00BA7F1D /* AppDelegate.swift */,
+				F8D90806229CEC9D00C68DE9 /* README.md */,
 				E7F7CEA41CFB8EAA00BA7F1D /* ViewController.swift */,
 				3485C2DB228271AC00FB5910 /* belmont.gpx */,
 				E75034951CFBAFC3003F5625 /* DestinationViewController.swift */,
@@ -226,7 +228,7 @@
 				TargetAttributes = {
 					E7F7CE9E1CFB8EAA00BA7F1D = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = A2N9APJ4GT;
+						DevelopmentTeam = TK5T4F2UKU;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
@@ -516,11 +518,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = A2N9APJ4GT;
+				DEVELOPMENT_TEAM = TK5T4F2UKU;
 				INFOPLIST_FILE = Shake/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = come.shake;
+				PRODUCT_BUNDLE_IDENTIFIER = "com-jak-2.shake";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -539,11 +541,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = A2N9APJ4GT;
+				DEVELOPMENT_TEAM = TK5T4F2UKU;
 				INFOPLIST_FILE = Shake/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = come.shake;
+				PRODUCT_BUNDLE_IDENTIFIER = "com-jak-2.shake";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Shake/Shake-Bridging-Header.h";
