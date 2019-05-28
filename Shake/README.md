@@ -603,7 +603,190 @@ internal class DualView : UIView {
 ### DetailView.swift
 
 **Dependencies:**
-1. 
+1. Foundation
+2. UIKit
+
+
+```swift
+// Identifier for detail subviews
+internal class InfoView : UIView
+
+// Identifier for reviews container
+internal class ReviewsContainerView : InfoView
+
+internal class WeeklyHoursLabel : UIView {
+
+	internal var day1: UILabel?
+	internal var day2: UILabel?
+	internal var day3: UILabel?
+	internal var day4: UILabel?
+	internal var day5: UILabel?
+	internal var day6: UILabel?
+	internal var day7: UILabel?
+	internal var monTimes: UILabel?
+	internal var tueTimes: UILabel?
+	internal var wedTimes: UILabel?
+	internal var thuTimes: UILabel?
+	internal var friTimes: UILabel?
+	internal var satTimes: UILabel?
+	internal var sunTimes: UILabel?
+
+	internal var times: [String]? { get set }
+	internal var rawData: [String]? { get set }
+
+	//
+	// MARK: - View initialization
+	//
+
+	override internal init(frame: CGRect)
+	required internal init?(coder aDecoder: NSCoder)
+	private func initDayLabels()
+	private func initHoursLabels()
+	private func removeWeekdayTextFrom(strings: [String]) -> [String]
+	private func loadTimes()
+}
+
+//
+// MARK: - identifier for custom scroll view
+//
+
+internal class SVCustom : UIScrollView {
+	
+	internal var fillColor: CGColor
+	internal init(frame: CGRect, color: CGColor)
+	required internal init?(coder aDecoder: NSCoder)
+	override internal func draw(_ rect: CGRect)
+}
+
+//
+// MARK: - DetailView main source
+//
+
+internal protocol DetailViewDelegate : AnyObject {
+	
+	func redirectToCall()
+	func redirectToWeb()
+	func redirectToMaps()
+	func saveLocation()
+	func remove(detailView: DetailView)
+}
+
+internal protocol DetailViewDataSource: AnyObject {
+
+	func setHoursFor(detailView: DetailView)
+	func setInfoFor(detailView: DetailView)
+	func setRatingFor(detailView: DetailView)
+	func setReviewsFor(detailView: DetailView)
+}
+
+internal class DetailView : UIView, UIScrollViewDelegate {
+
+	weak internal var delegate: DetailViewDelegate?
+	weak internal var datasource: DetailViewDataSource?
+
+	internal var scrollView: SVCustom!
+	
+	// Dimensions
+	internal var svHeight: CGFloat!
+	internal var svWidth: CGFloat!
+	internal var gHeight: CGFloat!
+	internal var iHeight: CGFloat!
+
+	// Views
+	internal var isOpenView: InfoView!
+	internal var addressView: InfoView!
+	internal var hoursView: InfoView!
+	internal var expandedHoursView: InfoView!
+	internal var callView: InfoView!
+	internal var saveView: InfoView!
+	internal var reviewView: InfoView!
+	internal var expandedReviewView: ReviewsContainerView!
+	internal var ratingView: UIView!
+	internal var openIcon: UIImageView!
+	
+	// Labels
+	internal var weeklyHoursLabel: WeeklyHoursLabel!
+	internal var exColHours: UIButton!
+	internal var exColReviews: UIButton!
+	internal var addressLabel: UILabel!
+	internal var nameLabel: UILabel!
+	internal var typeLabel: UILabel!
+	internal var isOpenLabel: UILabel!
+	internal var numberLabel: UILabel!
+	internal var saveLabel: UILabel!
+	internal var reviewsLabel: UILabel!
+	internal var webIconLabel: UILabel!
+
+	// Buttons
+	internal var addressIcon: UIButton!
+	internal var callIcon: UIButton!
+	internal var saveIcon: UIButton!
+	internal var webIcon: UIButton!
+	
+	// Other
+	internal var rating: Double
+	internal var svExpectedHeight: CGFloat
+	internal var hoursArray: [String]?
+	internal var reviews: NSArray?
+	internal var website: String?
+	internal var isOpen: Bool?
+	internal var hoursAvailable: Bool
+	internal var hoursExpanded: Bool
+	internal var reviewsExpanded: Bool
+	internal var isFullScreen: Bool
+	internal var svHeaderColor: UIColor?
+
+	internal init(dframe: CGRect, svframe: CGRect, open: Bool?)
+	required internal init?(coder aDecoder: NSCoder)
+
+	internal func loadData()
+
+	@objc internal func removeView(_ sender: UISwipeGestureRecognizer)
+	@objc internal func adjustScrollView(_ sender: UISwipeGestureRecognizer)
+	@objc internal func handleWebIconTapped(_ sender: UIButton)
+	@objc internal func handleLocationIconTapped(_ sender: UIButton)
+	@objc internal func exColHoursAction(_ sender: UITapGestureRecognizer)
+	@objc internal func handleCallIconTapped(_ sender: UIButton)
+	@objc internal func saveIconTapped(_ sender: UIButton)
+	@objc internal func exColRevAction(_ sender: UITapGestureRecognizer)
+
+	internal func scrollViewDidScroll(_ scrollView: UIScrollView)
+}
+
+internal class ReviewView: UIView {
+
+	internal var label: UILabel!
+	internal var nameLabel: UILabel!
+	internal var ratingLabel: UILabel!
+	internal var starView: CosmosView!
+	internal var imageView: UIImageView!
+	internal var ratingView: UIView!
+
+	internal init(frame: CGRect, rawData: [String : AnyObject]?)
+	required internal init?(coder aDecoder: NSCoder)
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
