@@ -31,7 +31,7 @@ Shake Main Swift Files
 3. Foundation
 4. GoogleMaps
 
-
+```swift
 /*
  * AppDelegate.swift
  *
@@ -118,7 +118,7 @@ extension UIApplication {
 
 	internal func topMostViewController() -> UIViewController?
 }
-
+```
 
 
 ### ViewController.swift
@@ -128,7 +128,7 @@ extension UIApplication {
 2. UIKit
 3. CoreLocation
 
-
+```swift
 /*
  * ViewController.swift
  *
@@ -185,7 +185,7 @@ internal class ViewController : UIViewController {
 						sender: Any?)
 
 }
-
+```
 
 
 ### DestinationViewController.swift
@@ -195,7 +195,7 @@ internal class ViewController : UIViewController {
 2. UIKit
 3. CoreLocation
 
-
+```swift
 // TODO: - interacting with Location is buggy (guest recognizer interference)
 
 internal enum Redirect { 
@@ -326,13 +326,15 @@ internal class DestinationViewController: UIViewController,
 	// TODO: not yet implemented
 	internal func saveLocation()
 	internal func remove(detailView: DetailView)
-	
+}
+```
 	
 ### GoogleSearch.swift
 
 **Dependencies:**
 1. Foundation
 
+```swift
 // To easily differentiate which API service is used
 internal enum SearchType {
 
@@ -381,7 +383,7 @@ public struct GoogleSearch {
 	//  this function must be called before making request if search type is .custom
       	mutating internal func setCustomURL(_ url: String?)
 }
-
+```
 
 ### CosmosDistrib.swift
 
@@ -405,12 +407,12 @@ public struct GoogleSearch {
 1. Foundation
 2. SystemConfiguration
 
-
+```swift
 public struct Reachability {
 
 	internal static func isConnected() -> Bool
 }
-
+```
 
 ### LocationView.swift
 
@@ -419,7 +421,7 @@ public struct Reachability {
 2. UIKit
 3. CoreLocation
 
-
+```swift
 /*  MARK: -  Protocol LocationViewDelegate
  *
  *  conforming class: DestinationViewController
@@ -444,7 +446,7 @@ internal protocol LocationViewDelegate : AnyObject {
 internal class Location : UIView, DetailViewDataSource {
 
 
-
+```
 
 
 
