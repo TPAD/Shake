@@ -368,20 +368,20 @@ public struct GoogleSearch {
 	private mutating func appendParametersToURL()
 	
 	/*
-       *  Creates a task that retrieves the contents of the call to the
-       *  Google API specified by the url created based on search type.
-       *
-       *  @parameter session: api for downloading content (minimum requirements)
-       *  @parameter handler: method, specified by controller that initiated
-       *    search struct used, to manipulate data retrieved upon task completion
-       */
+     *  Creates a task that retrieves the contents of the call to the
+     *  Google API specified by the url created based on search type.
+     *
+     *  @parameter session: api for downloading content (minimum requirements)
+     *  @parameter handler: method, specified by controller that initiated
+     *    search struct used, to manipulate data retrieved upon task completion
+     */
 	mutating internal func makeRequest(_ session: URLSession,
 							handler: @escaping (Data?) -> Void)
 	
 	// Method to handle special use case: 
 	//  If an http request must be made to a custom url,
 	//  this function must be called before making request if search type is .custom
-      	mutating internal func setCustomURL(_ url: String?)
+    mutating internal func setCustomURL(_ url: String?)
 }
 ```
 
@@ -445,11 +445,165 @@ internal protocol LocationViewDelegate : AnyObject {
  */
 internal class Location : UIView, DetailViewDataSource {
 
+	internal var view: UIView!
 
+	// Initialized when user long-taps
+	internal var dualView: DualView?
+
+	// Delegates tasks to DestinationViewController
+	weak internal var delegate: LocationViewDelegate?
+
+	@IBOutlet weak internal var image: UIImageView!
+	@IBOutlet weak internal var ratingView: UIView!
+	@IBOutlet weak internal var infoView: UIView!
+	@IBOutlet weak internal var name: UILabel!
+	@IBOutlet weak internal var cost: UILabel!
+
+	internal enum State {
+
+		case 'default'
+		case pressed
+	}
+
+	internal var state: State { get set }
+
+	// JSON object as Dictionary
+	internal var rawData: [String : AnyObject]? { get set }
+
+	internal var coordinates: (Double, Double)? { get set }
+	internal var phoneNumber: String?
+	internal var address: String?
+	internal var formatAddress: String?
+	internal var isOpen: Bool
+	internal var reviews: NSArray?
+	internal var weeklyHours: Array<String>?
+	internal var openPeriods: Array<[String : AnyObject]>?
+	internal var types: Array<String>?
+	internal var mainType: String?
+	internal var website: String?
+	
+	//
+	// MARK: - methods used for proper initialization of Location object
+	//
+	override internal init(frame: CGRect)
+	required internal init?(coder aDecoder: NSCoder)
+	private func nibSetup()
+	private func loadViewFromNib() -> UIView
+
+	//
+	// MARK: - methods used to retrieve information from JSON as a Dictionary
+	//
+	// Retrieve coordinates used for compass in DestinationViewController
+	//  in conjuction with location updates
+	private func getCoords() -> (Double, Double)?
+	private func getName() -> String?
+
+	// Updates Location object based on whether or not location is open
+	private func openRn()
+	private func setSchemeForUnavailableTimes()
+	
+	//
+	// MARK: - getter & setting functions for Location data
+	//
+	// INCOMLPETE: - Retrieves location photos, but only displays one on Location object
+	private func getPhoto()
+	private func responseHandler(data: Data?)
+	private func getPhoneNum() -> String?
+	private func setPriceLvl()
+	private func setRating()
+	private func getAddress() -> String?
+	private func setReviews()
+	private func getHours()
+	private func getWebsite()
+	private func getTypes()
+
+	// INCOMPLETE: - basic displacement of Location object in a repeated
+	//				 animation (mimicking a "shake")
+	private func shakeAnimation()
+
+	// Switch used by self and delegate
+	internal func toggleState()
+
+	// Adds a preview of the location over a DualView that is animated 
+	//  underneath
+	internal func addPreviewToSubview()
+
+	//
+	// MARK: - methods used by the delegate (DestinationViewController)
+	//
+
+	internal func requestViewUpdate()
+	@objc internal func longTap(_ sender: UIGestureRecognizer?)
+	internal func stopLocationUpdates()
+	internal func didstanceFromLocation(_ location: CLLocation) -> String
+
+	//
+	// MARK: - DetailViewDataSource
+	//
+	// Retrieves all necessary availability items
+	internal func setHoursFor(detailView: DetailView)
+
+	// Retrieves the following: Name, Open/Closed, Address, Types,
+	//  Phone Number, Number of Reviews, and Website
+	internal func setInfoFor(detailView: DetailView)
+
+	// Sets the rating on DetailView
+	internal func setRatingFor(detailView: DetailView)
+
+	// Retrieves reviews and initializes them within expandedReviewView
+	//  in ReviewView objects
+	internal func setReviewsFor(detailView: DetailView)
+}
+
+/*  MARK: -  Protocol DualViewDelegate
+ *
+ *  conforming class: DestinationViewController
+ *  Establishes communication between DualView object
+ *  and DestinationViewVontroller (delegation of tasks)
+ *
+ */
+internal protocol DualViewDelegate : AnyObject {
+
+	func navigationAction()
+	func callLocationAction()
+}
+
+/*  MARK: -  UIView DualView
+ *  
+ *  Initializes over Location object when long press is recognized
+ *  within bounds of Location object. Contains an image of location
+ *  as well as two buttons for navigation and phone call
+ *
+ */
+internal class DualView : UIView {
+
+	internal var rhs: UIView?
+	internal var rhs_icon: UIImageView?
+	internal var lhs: UIView?
+	internal var lhs_icon: UIImageView?
+
+	weak internal var delegate: DualViewDelegate?
+
+	@objc internal func userHasTapped(_ sender: UIGestureRecognizer)
+
+	override internal init(frame: CGRect)
+
+	required internal init?(coder aDecoder: NSCoder)
+
+	//
+	// MARK: - private functions
+	//
+
+	fileprivate func setupViews(_ frame: CGRect)
+	fileprivate func setupViewIcons(_ frame: CGRect)
+}
 ```
 
 
+### DetailView.swift
 
+**Dependencies:**
+1. 
 
 
 
